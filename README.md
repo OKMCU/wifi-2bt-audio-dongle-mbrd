@@ -1,2 +1,1 @@
-This is xounts-audio-dongle-mbrd project.
-
+'Xounts Audio Dongle' mother board project.
