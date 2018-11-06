@@ -22,9 +22,8 @@
 
 #if (OSAL_TIMER_EN > 0)
 extern void     osal_timer_init         ( void );
-extern uint8_t  osal_get_systick        ( void );
-extern void     osal_timer_update       ( void );
-extern uint32_t osal_timer_sysclock     ( void );
+extern void     osal_timer_get_time     ( uint32_t *p_sec, uint16_t *p_ms );
+extern void     osal_timer_set_time     ( uint32_t sec, uint16_t ms );
 extern void    *osal_timer_cback_create ( void ( *p_fxn )( void * ), void *p_arg, uint32_t timeout_ms );
 extern void     osal_timer_cback_update ( void *timer_id, uint32_t timeout_ms );
 extern void     osal_timer_cback_delete ( void *timer_id );

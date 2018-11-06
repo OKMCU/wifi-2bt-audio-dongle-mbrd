@@ -34,7 +34,6 @@ typedef struct osal_timer_t {
 static OSAL_TIMER_t *p_timers_head;
 static OSAL_TIMER_t *p_timers_tail;
 static uint32_t time_sec;
-static uint32_t sysclock;
 static uint16_t time_ms;
 static uint8_t prev_systick;
 uint8_t osal_systick;
@@ -151,21 +150,9 @@ extern void     osal_timer_init         ( void )
     p_timers_head = NULL;
     p_timers_tail = NULL;
     time_sec = 0;
-    sysclock = 0;
     time_ms = 0;
     prev_systick = 0;
     osal_systick = 0;
-}
-
-extern uint8_t osal_get_systick( void )
-{
-    uint8_t systick;
-
-    OSAL_ENTER_CRITICAL();
-    systick = osal_systick;
-    OSAL_EXIT_CRITICAL();
-    
-    return systick;
 }
 
 extern void     osal_timer_update       ( void )
@@ -179,7 +166,9 @@ extern void     osal_timer_update       ( void )
     uint8_t curr_systick;
     uint8_t delta_systick;
     
-    curr_systick = osal_get_systick();
+    OSAL_ENTER_CRITICAL();
+    curr_systick = osal_systick;
+    OSAL_EXIT_CRITICAL();
 
     if( curr_systick != prev_systick )
     {
@@ -187,7 +176,6 @@ extern void     osal_timer_update       ( void )
         prev_systick = curr_systick;
         
         time_ms += delta_systick;
-        sysclock += delta_systick;
         if( time_ms >= 1000 )
         {
             time_ms -= 1000;
@@ -223,9 +211,18 @@ extern void     osal_timer_update       ( void )
     }
 }
 
-extern uint32_t osal_timer_sysclock      ( void )
+extern void     osal_timer_get_time     ( uint32_t *p_sec, uint16_t *p_ms )
 {
-    return sysclock;
+    if( p_sec )
+        *p_sec = time_sec;
+    if( p_ms )
+        *p_ms = time_ms;
+}
+
+extern void     osal_timer_set_time     ( uint32_t sec, uint16_t ms )
+{
+    time_sec = sec;
+    time_ms = ms;
 }
 
 extern void    *osal_timer_cback_create ( void ( *p_fxn )( void * ), void *p_arg, uint32_t timeout_ms )
