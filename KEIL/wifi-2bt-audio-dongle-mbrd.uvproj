@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>xounts-audio-dongle-mbrd</TargetName>
+      <TargetName>wifi-2bt-audio-dongle-mbrd</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
@@ -46,7 +46,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\obj\</OutputDirectory>
-          <OutputName>xounts-audio-dongle-mbrd</OutputName>
+          <OutputName>wifi-2bt-audio-dongle-mbrd</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>

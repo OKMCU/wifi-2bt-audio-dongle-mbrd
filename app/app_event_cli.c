@@ -433,6 +433,7 @@ static void app_cli_cmd_wifimod      ( char *p_arg )
 {
     char *p_opt;
     char *p_str;
+    uint8_t mode;
 
     p_str = NULL;
 
@@ -448,6 +449,24 @@ static void app_cli_cmd_wifimod      ( char *p_arg )
         hal_wifimod_disable();
         hal_cli_print_str( "OK!\r\n\r\n" );
         return;
+    }
+    else if( strcmp(p_opt, "-mode") == 0 )
+    {
+        p_arg = strtok_r( NULL, " ", &p_str );
+        mode = HAL_WIFIMOD_MODE_NONE;
+        if( strcmp(p_arg, "HN") == 0 )
+            mode = HAL_WIFIMOD_MODE_HN;
+        else if( strcmp(p_arg, "SA") == 0 )
+            mode = HAL_WIFIMOD_MODE_SA;
+        else if( strcmp(p_arg, "CFG") == 0 )
+            mode = HAL_WIFIMOD_MODE_CFG;
+        
+        if( mode != HAL_WIFIMOD_MODE_NONE )
+        {
+            hal_wifimod_set_mode( mode );
+            hal_cli_print_str( "OK!\r\n\r\n" );
+            return;
+        }
     }
     
     hal_cli_print_str( "Bad command!\r\n\r\n" );
