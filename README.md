@@ -1,1 +1,1 @@
-'Xounts Audio Dongle' mother board project.
+'Wi-Fi 2xBluetooth Audio Dongle' mother board project.
