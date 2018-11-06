@@ -327,7 +327,7 @@ static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
             else if(cActiveNetwork == '4')  mode = HAL_WIFIMOD_MODE_CFG;
             else                            mode = HAL_WIFIMOD_MODE_NONE;
 
-            wifi_mod_info.src = mode;
+            wifi_mod_info.mode = mode;
             osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_MODE );
         return HAL_LUCICMD_MSGBOX_NetworkConnectionStatus;
 
