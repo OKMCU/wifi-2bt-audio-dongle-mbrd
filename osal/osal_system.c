@@ -17,6 +17,9 @@
 #include "osal.h"
 #include <stdint.h>
 
+#if (OSAL_TIMER_EN > 0)
+extern void osal_timer_update( void );
+#endif /* (OSAL_TIMER_EN > 0) */
 
 extern OSAL_TASK_t osal_task_list[ OSAL_TASK_MAX ];
 
