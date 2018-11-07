@@ -17,7 +17,7 @@
 #include "app_event_bt.h"
 
 #include "app_task_wifimod.h"
-
+#include "app_event_wifimod.h"
 
 #endif
 

@@ -23,6 +23,7 @@
 #include "app_config.h"
 #include "app_assert.h"
 #include "app_task_wifimod.h"
+#include "app_event_wifimod.h"
 
 #include "main.h"
 
@@ -85,45 +86,37 @@ void app_task_wifimod( uint8_t task_id, uint8_t event_id )
 
         case TASK_EVT_APP_WIFIMOD_BOOT_UP:
         {
-            hal_cli_print_str( "Wi-Fi module boot up.\r\n" );
+            app_event_wifimod_bootup();
         }
         break;
 
         case TASK_EVT_APP_WIFIMOD_RESET:
         {
-            hal_cli_print_str( "Wi-Fi module rebooting.\r\n" );
+            app_event_wifimod_reboot();
         }
         break;
 
         case TASK_EVT_APP_WIFIMOD_UPD_MODE:
         {
-            hal_cli_print_str( "Wi-Fi module mode is " );
-            hal_cli_print_uint( hal_wifimod_get_mode() );
-            hal_cli_print_str( ".\r\n" );
+            app_event_wifimod_update_mode( hal_wifimod_get_mode() );
         }
         break;
 
         case TASK_EVT_APP_WIFIMOD_UPD_SRC:
         {
-            hal_cli_print_str( "Wi-Fi module src is " );
-            hal_cli_print_uint( hal_wifimod_get_src() );
-            hal_cli_print_str( ".\r\n" );
+            app_event_wifimod_update_source( hal_wifimod_get_src() );
         }
         break;
 
         case TASK_EVT_APP_WIFIMOD_UPD_VOL:
         {
-            hal_cli_print_str( "Wi-Fi module vol is " );
-            hal_cli_print_uint( hal_wifimod_get_vol() );
-            hal_cli_print_str( ".\r\n" );
+            app_event_wifimod_update_volume( hal_wifimod_get_vol() );
         }
         break;
 
         case TASK_EVT_APP_WIFIMOD_UPD_STATE:
         {
-            hal_cli_print_str( "Wi-Fi module play state is " );
-            hal_cli_print_uint( hal_wifimod_play_state() );
-            hal_cli_print_str( ".\r\n" );
+            app_event_wifimod_update_state( hal_wifimod_play_state() );
         }
         break;
         
