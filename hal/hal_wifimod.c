@@ -99,18 +99,21 @@ extern uint8_t  hal_wifimod_get_mode( void )
 
 extern void     hal_wifimod_set_src( uint8_t src )
 {
-    if( src == HAL_WIFIMOD_SRC_AUXIN )
+    if( wifi_mod_info.flags & HAL_WIFIMOD_FLAG_RDY )
     {
-        if( wifi_mod_info.src_current != HAL_WIFIMOD_SRC_AUXIN )
+        if( src == HAL_WIFIMOD_SRC_AUXIN )
         {
-            hal_lucicmd_send_AuxInStart();
+            if( wifi_mod_info.src_current != HAL_WIFIMOD_SRC_AUXIN )
+            {
+                hal_lucicmd_send_AuxInStart();
+            }
         }
-    }
-    else
-    {
-        if( wifi_mod_info.src_current == HAL_WIFIMOD_SRC_AUXIN )
+        else
         {
-            hal_lucicmd_send_AuxInStop();
+            if( wifi_mod_info.src_current == HAL_WIFIMOD_SRC_AUXIN )
+            {
+                hal_lucicmd_send_AuxInStop();
+            }
         }
     }
 }
@@ -122,7 +125,14 @@ extern uint8_t  hal_wifimod_get_src( void )
 
 extern void     hal_wifimod_set_vol( uint8_t vol )
 {
-
+    if( wifi_mod_info.flags & HAL_WIFIMOD_FLAG_RDY )
+    {
+        if( vol != wifi_mod_info.vol )
+        {
+            wifi_mod_info.vol = vol;
+            hal_lucicmd_send_SetVolume( vol );
+        }
+    }
 }
 
 extern uint8_t  hal_wifimod_get_vol( void )

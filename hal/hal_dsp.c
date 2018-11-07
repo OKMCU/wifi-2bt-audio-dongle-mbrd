@@ -861,6 +861,10 @@ extern void     hal_dsp_write_init_code(void)
     }
     
     hal_dsp_write(MaxxAudio_Cmd_FULL_NoProcess, sizeof(MaxxAudio_Cmd_FULL_NoProcess));
+
+    hal_dsp_clr_src( HAL_DSP_SRC_ALL );
+    hal_dsp_set_vol( 0 );
+    
 }
 
 extern void     hal_dsp_set_src(uint8_t src)

@@ -29,6 +29,8 @@
 #define HAL_DSP_SRC_SDI1    0x02
 #define HAL_DSP_SRC_ADC     0x04
 
+#define HAL_DSP_SRC_ALL     (HAL_DSP_SRC_SDI0 + HAL_DSP_SRC_SDI1 + HAL_DSP_SRC_ADC)
+
 #define HAL_DSP_VOL_MAX     0x7FFFFF
 
 extern void     hal_dsp_disable(void);
