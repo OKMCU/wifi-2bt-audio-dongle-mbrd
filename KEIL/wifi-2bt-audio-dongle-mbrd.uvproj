@@ -743,6 +743,11 @@
               <FileType>1</FileType>
               <FilePath>..\app\app_event_wifimod.c</FilePath>
             </File>
+            <File>
+              <FileName>app_event_main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\app_event_main.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

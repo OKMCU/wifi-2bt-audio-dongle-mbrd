@@ -29,9 +29,10 @@
 #define TASK_ID_APP_MAIN                    9
 
 #define TASK_EVT_APP_MAIN_POR               1
-#define TASK_EVT_APP_MAIN_APP_EXCEPTION     2
-#define TASK_EVT_APP_MAIN_HAL_EXCEPTION     3
-#define TASK_EVT_APP_MAIN_OSAL_EXCEPTION    4
+#define TASK_EVT_APP_MAIN_INIT              2
+#define TASK_EVT_APP_MAIN_APP_EXCEPTION     3
+#define TASK_EVT_APP_MAIN_HAL_EXCEPTION     4
+#define TASK_EVT_APP_MAIN_OSAL_EXCEPTION    5
 
 #define TASK_EVT_APP_WIFIMOD_BOOT_UP        1
 #define TASK_EVT_APP_WIFIMOD_UPD_VOL        2

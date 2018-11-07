@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  app_task_main.c
+ @file  app_event_main.c
 
  @brief 
 
@@ -12,7 +12,7 @@
 
  ******************************************************************************
  Release Name: 
- Release Date: 2016-06-09 06:57:09
+ Release Date: 
  *****************************************************************************/
 
 /**************************************************************************************************
@@ -20,74 +20,57 @@
  **************************************************************************************************/
 #include "osal.h"
 #include "hal.h"
-#include "app.h"
+#include "app_config.h"
+#include "app_assert.h"
+#include "app_event_main.h"
 
-#include "main.h"
+#include <string.h>
+#include "stringx.h"
 /**************************************************************************************************
- * TYPES
+ * TYPE DEFINES
+ **************************************************************************************************/
+
+ /**************************************************************************************************
+ * LOCAL API DECLARATION
  **************************************************************************************************/
 
 /**************************************************************************************************
  * CONSTANTS
  **************************************************************************************************/
 
-
 /**************************************************************************************************
  * GLOBAL VARIABLES
  **************************************************************************************************/
-extern void app_task_main_init( void )
+extern void app_event_main_por( void )
 {
-    osal_timer_event_create( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_POR, 3000 );
+    uint8_t u8tmp;
+
+    hal_cli_print_str( "\r\nThis is Xounts Audio Dongle project.\r\n" );
+    hal_cli_print_str( "Power on reset.\r\n" );
+    
+    u8tmp = hal_uibrd_hw_ver();
+    hal_cli_print_str( "UI board HW version 0x" );
+    hal_cli_print_hex8( u8tmp );
+    hal_cli_print_str( ".\r\n" );
+
+    u8tmp = hal_uibrd_sw_ver();
+    hal_cli_print_str( "UI board SW version 0x" );
+    hal_cli_print_hex8( u8tmp );
+    hal_cli_print_str( ".\r\n" );
+
+    hal_dsp_enable();
+    hal_wifimod_enable();
+
+    //clear IRQs
+    hal_uibrd_irq_evt();
+    
 }
 
-
-extern void app_task_main ( uint8_t task_id, uint8_t event_id )
+extern void app_event_main_init( void )
 {
-    switch (event_id)
-    {
-        case TASK_EVT_APP_MAIN_POR:
-        {
-            app_event_main_por();
-            osal_timer_event_create( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_INIT, 100 );
-        }
-        break;
-
-        case TASK_EVT_APP_MAIN_INIT:
-        {
-            app_event_main_init();
-        }
-        break;
-
-        case TASK_EVT_APP_MAIN_OSAL_EXCEPTION:
-        {
-            hal_cli_print_str( "ERROR!\r\n" );
-            hal_cli_print_str( "OSAL_EXCEPTION!\r\n" );
-        }
-        break;
-
-        case TASK_EVT_APP_MAIN_HAL_EXCEPTION:
-        {
-            hal_cli_print_str( "ERROR!\r\n" );
-            hal_cli_print_str( "HAL EXCEPTION!\r\n" );
-        }
-        break;
-
-        case TASK_EVT_APP_MAIN_APP_EXCEPTION:
-        {
-            hal_cli_print_str( "ERROR!\r\n" );
-            hal_cli_print_str( "APP EXCEPTION!\r\n" );
-        }
-        break;
-        
-
-        default:
-            APP_ASSERT_FORCED();
-        break;
-    }
+    hal_led_set( HAL_LED_ALL, HAL_LED_MODE_OFF );
+    hal_dsp_write_init_code();
 }
-
-
-
 /**************************************************************************************************
 **************************************************************************************************/
 
