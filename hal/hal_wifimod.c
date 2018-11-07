@@ -19,6 +19,10 @@
 #define LUCICMD_HEAD_LEN        10
 #define LUCICMD_DATA_LEN_MAX    128
 
+#define HAL_WIFIMOD_HN_TIMEOUT  15000
+
+#define HAL_WIFIMOD_FLAG_RDY            0x01
+
 /**************************************************************************************************
  * TYPES
  **************************************************************************************************/
@@ -29,9 +33,10 @@ typedef struct lucicmd_rx_ctrl_t {
 } LUCICMD_RX_CTRL_t;
 
 typedef struct wifi_mod_info_t {
+    uint8_t flags;
     uint8_t mode_current;
     uint8_t mode_target;
-    uint8_t src;
+    uint8_t src_current;
     uint8_t state;
     uint8_t vol;
 } WIFI_MOD_INFO_t;
@@ -50,6 +55,7 @@ static WIFI_MOD_INFO_t wifi_mod_info;
  **************************************************************************************************/
 static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd );
 static void hal_wifimod_info_init( void );
+static void hal_wifimod_reboot( void );
 
 
 extern void hal_wifimod_init( void )
@@ -70,6 +76,8 @@ extern void hal_wifimod_disable    ( void )
     hal_wifimod_info_init();
     osal_event_clr( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_RESET );
     osal_event_clr( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_MODE_CTRL );
+    osal_event_clr( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_HN_TIMEOUT );
+    osal_timer_event_delete( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_HN_TIMEOUT );
 }
 
 extern void     hal_wifimod_set_mode( uint8_t mode )
@@ -77,7 +85,10 @@ extern void     hal_wifimod_set_mode( uint8_t mode )
     if( wifi_mod_info.mode_current != mode && mode != HAL_WIFIMOD_MODE_NONE )
     {
         wifi_mod_info.mode_target = mode;
-        osal_event_set( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_MODE_CTRL );
+        if( wifi_mod_info.flags & HAL_WIFIMOD_FLAG_RDY )
+        {
+            osal_event_set( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_MODE_CTRL );
+        }
     }
 }
 
@@ -88,12 +99,25 @@ extern uint8_t  hal_wifimod_get_mode( void )
 
 extern void     hal_wifimod_set_src( uint8_t src )
 {
-
+    if( src == HAL_WIFIMOD_SRC_AUXIN )
+    {
+        if( wifi_mod_info.src_current != HAL_WIFIMOD_SRC_AUXIN )
+        {
+            hal_lucicmd_send_AuxInStart();
+        }
+    }
+    else
+    {
+        if( wifi_mod_info.src_current == HAL_WIFIMOD_SRC_AUXIN )
+        {
+            hal_lucicmd_send_AuxInStop();
+        }
+    }
 }
 
 extern uint8_t  hal_wifimod_get_src( void )
 {
-    return wifi_mod_info.src;
+    return wifi_mod_info.src_current;
 }
 
 extern void     hal_wifimod_set_vol( uint8_t vol )
@@ -235,11 +259,10 @@ extern void hal_wifimod_driver_handle_mode_ctrl( void )
 
     switch (cases)
     {
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_NONE, HAL_WIFIMOD_MODE_NONE):
-            osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_MODE );
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_NONE, HAL_WIFIMOD_MODE_NONE ):
         break;
 
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_NONE, HAL_WIFIMOD_MODE_SA):
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_NONE, HAL_WIFIMOD_MODE_SA ):
             osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_MODE );
         break;
 
@@ -251,11 +274,10 @@ extern void hal_wifimod_driver_handle_mode_ctrl( void )
             osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_MODE );
         break;
 
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_SA, HAL_WIFIMOD_MODE_NONE):
-            //do nothing, just wait
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_SA, HAL_WIFIMOD_MODE_NONE ):
         break;
 
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_SA, HAL_WIFIMOD_MODE_SA):
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_SA, HAL_WIFIMOD_MODE_SA ):
             osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_MODE );
             wifi_mod_info.mode_target = HAL_WIFIMOD_MODE_NONE;
         break;
@@ -268,11 +290,10 @@ extern void hal_wifimod_driver_handle_mode_ctrl( void )
             hal_lucicmd_send_SetWiFiModeSA();
         break;
 
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_HN, HAL_WIFIMOD_MODE_NONE):
-            //do nothing, just wait
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_HN, HAL_WIFIMOD_MODE_NONE ):
         break;
 
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_HN, HAL_WIFIMOD_MODE_SA):
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_HN, HAL_WIFIMOD_MODE_SA ):
             hal_lucicmd_send_SetWiFiModeHN();
         break;
 
@@ -285,11 +306,10 @@ extern void hal_wifimod_driver_handle_mode_ctrl( void )
             hal_lucicmd_send_SetWiFiModeSA();
         break;
 
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_CFG, HAL_WIFIMOD_MODE_NONE):
-            //do nothing, just wait
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_CFG, HAL_WIFIMOD_MODE_NONE ):
         break;
 
-        case BUILD_UINT8( HAL_WIFIMOD_MODE_CFG, HAL_WIFIMOD_MODE_SA):
+        case BUILD_UINT8( HAL_WIFIMOD_MODE_CFG, HAL_WIFIMOD_MODE_SA ):
             hal_lucicmd_send_SetWiFiModeHN();
         break;
 
@@ -304,13 +324,32 @@ extern void hal_wifimod_driver_handle_mode_ctrl( void )
     }
 }
 
+extern void hal_wifimod_driver_handle_src_ctrl( void )
+{
+    
+}
+
+extern void hal_wifimod_driver_handle_hn_timeout( void )
+{
+    if( wifi_mod_info.mode_target == HAL_WIFIMOD_MODE_SA )
+    {
+        hal_lucicmd_send_SetWiFiModeSA();
+    }
+    else
+    {
+        wifi_mod_info.mode_target = HAL_WIFIMOD_MODE_CFG;
+        hal_lucicmd_send_SetWiFiModeCFG();
+    }
+}
+
 static void hal_wifimod_info_init( void )
 {
     wifi_mod_info.mode_current = HAL_WIFIMOD_MODE_NONE;
     wifi_mod_info.mode_target = HAL_WIFIMOD_MODE_NONE;
-    wifi_mod_info.src = HAL_WIFIMOD_SRC_NONE;
+    wifi_mod_info.src_current = HAL_WIFIMOD_SRC_NONE;
     wifi_mod_info.state = HAL_WIFIMOD_PLSTA_STOPPED;
     wifi_mod_info.vol = 0;
+    wifi_mod_info.flags = 0;
 
     if( p_rx_ctrl != NULL )
     {
@@ -324,9 +363,11 @@ static void hal_wifimod_reboot( void )
     HAL_WIFIMOD_RESET_LOW();
     
     wifi_mod_info.mode_current = HAL_WIFIMOD_MODE_NONE;
-    wifi_mod_info.src = HAL_WIFIMOD_SRC_NONE;
+    //wifi_mod_info.mode_target = HAL_WIFIMOD_MODE_NONE;
+    wifi_mod_info.src_current = HAL_WIFIMOD_SRC_NONE;
     wifi_mod_info.state = HAL_WIFIMOD_PLSTA_STOPPED;
     wifi_mod_info.vol = 0;
+    wifi_mod_info.flags = 0;
     
     if( p_rx_ctrl != NULL )
     {
@@ -334,8 +375,14 @@ static void hal_wifimod_reboot( void )
         p_rx_ctrl = NULL;
     }
 
-    osal_event_clr( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_RESET );
     osal_event_clr( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_MODE_CTRL );
+    osal_timer_event_create( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_RESET, 10 );
+    
+    osal_event_clr( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_HN_TIMEOUT );
+    osal_timer_event_delete( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_HN_TIMEOUT );
+
+    osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_RESET);
+    
 }
 
 static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
@@ -359,6 +406,7 @@ static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
         return HAL_LUCICMD_MSGBOX_UartInterfaceReady;
 
         case HAL_LUCICMD_MSGBOX_IsHostPresent:
+            wifi_mod_info.flags |= HAL_WIFIMOD_FLAG_RDY;
             osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_BOOT_UP );
         return HAL_LUCICMD_MSGBOX_IsHostPresent;
 
@@ -370,8 +418,11 @@ static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
                 HAL_ASSERT( p_luci_cmd->p_data != NULL );
                 decstr2uint( (char *)(p_luci_cmd->p_data), &u32tmp );
                 HAL_ASSERT( u32tmp <= 100 );
-                wifi_mod_info.vol = (uint8_t)u32tmp;
-                osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_VOL );
+                if( (uint8_t)u32tmp != wifi_mod_info.vol )
+                {
+                    wifi_mod_info.vol = (uint8_t)u32tmp;
+                    osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_VOL );
+                }
             }
             else if( p_luci_cmd->status == HAL_LUCICMD_STATUS_OK )
             {
@@ -392,8 +443,11 @@ static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
                 HAL_ASSERT( p_luci_cmd->p_data != NULL );
                 decstr2uint( (char *)(p_luci_cmd->p_data), &u32tmp );
                 HAL_ASSERT( u32tmp <= 100 );
-                wifi_mod_info.vol = (uint8_t)u32tmp;
-                osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_VOL );
+                if( (uint8_t)u32tmp != wifi_mod_info.vol )
+                {
+                    wifi_mod_info.vol = (uint8_t)u32tmp;
+                    osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_VOL );
+                }
             }
         return HAL_LUCICMD_MSGBOX_ZoneVolumeCtrl;
 
@@ -401,13 +455,13 @@ static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
             if( decstr2uint( (char *)(p_luci_cmd->p_data), &u32tmp ) == 0 )
                 HAL_ASSERT_FORCED();
             if( u32tmp == HAL_LUCICMD_AUDIO_SRC_NONE )
-                wifi_mod_info.src = HAL_WIFIMOD_SRC_NONE;
+                wifi_mod_info.src_current = HAL_WIFIMOD_SRC_NONE;
             else if( u32tmp == HAL_LUCICMD_AUDIO_SRC_LineIn )
-                wifi_mod_info.src = HAL_WIFIMOD_SRC_AUXIN;
+                wifi_mod_info.src_current = HAL_WIFIMOD_SRC_AUXIN;
             else if( u32tmp == HAL_LUCICMD_AUDIO_SRC_SDCard )
-                wifi_mod_info.src = HAL_WIFIMOD_SRC_SD;
+                wifi_mod_info.src_current = HAL_WIFIMOD_SRC_SD;
             else
-                wifi_mod_info.src = HAL_WIFIMOD_SRC_WIFI;
+                wifi_mod_info.src_current = HAL_WIFIMOD_SRC_WIFI;
             osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_SRC );
         return HAL_LUCICMD_MSGBOX_CurrentSource;
 
@@ -417,8 +471,6 @@ static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
 
         case HAL_LUCICMD_MSGBOX_RebootRequest:
             hal_wifimod_reboot();
-            osal_timer_event_create( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_RESET, 10 );
-            osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_RESET);
         return HAL_LUCICMD_MSGBOX_RebootRequest;
 
         case HAL_LUCICMD_MSGBOX_NetworkConnectionStatus:
@@ -439,7 +491,15 @@ static uint16_t hal_wifimod_process_luci_cmd( const HAL_LUCI_CMD_t *p_luci_cmd )
                 wifi_mod_info.mode_current = mode;
                 osal_event_set( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_MODE_CTRL );
             }
-            
+
+            if( mode == HAL_WIFIMOD_MODE_NONE )
+            {
+                osal_timer_event_create( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_HN_TIMEOUT, HAL_WIFIMOD_HN_TIMEOUT );
+            }
+            else
+            {
+                osal_timer_event_delete( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_HN_TIMEOUT );
+            }
         return HAL_LUCICMD_MSGBOX_NetworkConnectionStatus;
 
 

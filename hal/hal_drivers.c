@@ -39,6 +39,8 @@ extern void hal_lucicmd_driver_handle_rxne( void );
 extern void hal_lucicmd_driver_handle_txe( void );
 extern void hal_wifimod_driver_handle_rx_bytes( uint8_t *p_msg, uint16_t len );
 extern void hal_wifimod_driver_handle_mode_ctrl( void );
+extern void hal_wifimod_driver_handle_src_ctrl( void );
+extern void hal_wifimod_driver_handle_hn_timeout( void );
 /**************************************************************************************************
  * @fn          hal_driver_init
  *
@@ -132,6 +134,13 @@ extern void hal_task_driver_wifimod( uint8_t task_id, uint8_t event_id )
 
         case TASK_EVT_HAL_DRIVER_WIFIMOD_MODE_CTRL:
             hal_wifimod_driver_handle_mode_ctrl();
+        break;
+
+        case TASK_EVT_HAL_DRIVER_WIFIMOD_HN_TIMEOUT:
+            hal_wifimod_driver_handle_hn_timeout();
+        break;
+
+        case TASK_EVT_HAL_DRIVER_WIFIMOD_SRC_CTRL:
         break;
         
         default:
