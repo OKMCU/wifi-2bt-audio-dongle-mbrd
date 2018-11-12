@@ -45,8 +45,11 @@
 
 extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
 {
+    uint16_t keyMerge;
     uint8_t i;
     uint8_t cnt;
+    uint8_t mode;
+    
     
     const char *pKeyEvent[] = {
         "LEAVE",
@@ -81,9 +84,38 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
     hal_cli_print_str( pKeyEvent[keyEvent] );
     hal_cli_print_str( "\r\n" );
 
+    keyMerge = BUILD_UINT16( keyValue, keyEvent );
+
+    switch( keyMerge )
+    {
+        case BUILD_UINT16( HAL_KEY_WIFI, APP_EVENT_KEY_SHORT ):
+            mode = hal_wifimod_get_mode();
+            if( mode == HAL_WIFIMOD_MODE_SA )
+            {
+                hal_wifimod_set_mode( HAL_WIFIMOD_MODE_HN );
+                LED_WIFI_IND_BOOTING();
+            }
+            else if( mode == HAL_WIFIMOD_MODE_HN || HAL_WIFIMOD_MODE_CFG )
+            {
+                hal_wifimod_set_mode( HAL_WIFIMOD_MODE_SA );
+                LED_WIFI_IND_BOOTING();
+            }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_WIFI, APP_EVENT_KEY_LONG ):
+            mode = hal_wifimod_get_mode();
+            if( mode != HAL_WIFIMOD_MODE_CFG )
+            {
+                hal_wifimod_set_mode( HAL_WIFIMOD_MODE_CFG );
+                LED_WIFI_IND_BOOTING();
+            }
+        break;
+
+        default:
+        break;
+    }
 #if 0
-    if( AppInfo.lsReady == FALSE )
-        return;
+    
 
     switch( keyValue )
     {
