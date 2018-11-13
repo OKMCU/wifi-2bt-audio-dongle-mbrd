@@ -100,33 +100,6 @@
 #define HAL_LUCICMD_PLAY_CTRL_MUTE                 6
 #define HAL_LUCICMD_PLAY_CTRL_UNMUTE               7
 
-#define HAL_LUCICMD_AUDIO_SRC_NONE                 0
-#define HAL_LUCICMD_AUDIO_SRC_Airplay              1
-#define HAL_LUCICMD_AUDIO_SRC_DMR                  2
-#define HAL_LUCICMD_AUDIO_SRC_DMP                  3
-#define HAL_LUCICMD_AUDIO_SRC_Spotify              4
-#define HAL_LUCICMD_AUDIO_SRC_USB                  5
-#define HAL_LUCICMD_AUDIO_SRC_SDCard               6
-#define HAL_LUCICMD_AUDIO_SRC_Melon                7
-#define HAL_LUCICMD_AUDIO_SRC_vTuner               8
-#define HAL_LUCICMD_AUDIO_SRC_TuneIn               9
-#define HAL_LUCICMD_AUDIO_SRC_Miracast             10
-#define HAL_LUCICMD_AUDIO_SRC_Reserved11           11
-#define HAL_LUCICMD_AUDIO_SRC_DDMS_Slave           12
-#define HAL_LUCICMD_AUDIO_SRC_Reserved13           13
-#define HAL_LUCICMD_AUDIO_SRC_LineIn               14
-#define HAL_LUCICMD_AUDIO_SRC_Reserved15           15
-#define HAL_LUCICMD_AUDIO_SRC_AppleDevice          16
-#define HAL_LUCICMD_AUDIO_SRC_DirectURL            17
-#define HAL_LUCICMD_AUDIO_SRC_Reserved18           18
-#define HAL_LUCICMD_AUDIO_SRC_Bluetooth            19
-#define HAL_LUCICMD_AUDIO_SRC_Reserved20           20
-#define HAL_LUCICMD_AUDIO_SRC_Deezer               21
-#define HAL_LUCICMD_AUDIO_SRC_Tidal                22
-#define HAL_LUCICMD_AUDIO_SRC_Favorites            23
-#define HAL_LUCICMD_AUDIO_SRC_GoogleCast           24
-#define HAL_LUCICMD_AUDIO_SRC_ExtSrcCtrlByHostMCU  25
-
 #define HAL_LUCICMD_PLAY_STATE_PLAYING              0
 #define HAL_LUCICMD_PLAY_STATE_STOPPED              1
 #define HAL_LUCICMD_PLAY_STATE_PAUSED               2

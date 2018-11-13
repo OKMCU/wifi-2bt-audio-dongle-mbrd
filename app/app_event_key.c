@@ -48,7 +48,6 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
     uint16_t keyMerge;
     uint8_t i;
     uint8_t cnt;
-    uint8_t mode;
     
     
     const char *pKeyEvent[] = {
@@ -89,26 +88,51 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
     switch( keyMerge )
     {
         case BUILD_UINT16( HAL_KEY_WIFI, APP_EVENT_KEY_SHORT ):
-            mode = hal_wifimod_get_mode();
-            if( mode == HAL_WIFIMOD_MODE_SA )
+        {
+            if( app_info.wifi_state_curr == WIFI_STATE_SA )
             {
+                LED_WIFI_IND_MODE_HN_INIT();
                 hal_wifimod_set_mode( HAL_WIFIMOD_MODE_HN );
-                LED_WIFI_IND_BOOTING();
+                app_info.wifi_state_prev = app_info.wifi_state_curr;
+                app_info.wifi_state_curr = WIFI_STATE_HN_INIT;
             }
-            else if( mode == HAL_WIFIMOD_MODE_HN || HAL_WIFIMOD_MODE_CFG )
+            else if( app_info.wifi_state_curr == WIFI_STATE_HN )
             {
+                LED_WIFI_IND_MODE_SA_INIT();
                 hal_wifimod_set_mode( HAL_WIFIMOD_MODE_SA );
-                LED_WIFI_IND_BOOTING();
+                app_info.wifi_state_prev = app_info.wifi_state_curr;
+                app_info.wifi_state_curr = WIFI_STATE_SA_INIT;
             }
+            else if( app_info.wifi_state_curr == WIFI_STATE_CFG )
+            {
+                if( app_info.wifi_state_prev == WIFI_STATE_HN )
+                {
+                    LED_WIFI_IND_MODE_HN_INIT();
+                    hal_wifimod_set_mode( HAL_WIFIMOD_MODE_HN );
+                    app_info.wifi_state_prev = app_info.wifi_state_curr;
+                    app_info.wifi_state_curr = WIFI_STATE_HN_INIT;
+                }
+                else
+                {
+                    LED_WIFI_IND_MODE_SA_INIT();
+                    hal_wifimod_set_mode( HAL_WIFIMOD_MODE_SA );
+                    app_info.wifi_state_prev = app_info.wifi_state_curr;
+                    app_info.wifi_state_curr = WIFI_STATE_SA_INIT;
+                }
+            }
+        }
         break;
 
         case BUILD_UINT16( HAL_KEY_WIFI, APP_EVENT_KEY_LONG ):
-            mode = hal_wifimod_get_mode();
-            if( mode != HAL_WIFIMOD_MODE_CFG )
+        {
+            if( app_info.wifi_state_curr == WIFI_STATE_HN || app_info.wifi_state_curr == WIFI_STATE_SA )
             {
+                LED_WIFI_IND_MODE_CFG_INIT();
                 hal_wifimod_set_mode( HAL_WIFIMOD_MODE_CFG );
-                LED_WIFI_IND_BOOTING();
+                app_info.wifi_state_prev = app_info.wifi_state_curr;
+                app_info.wifi_state_curr = WIFI_STATE_CFG_INIT;
             }
+        }
         break;
 
         default:

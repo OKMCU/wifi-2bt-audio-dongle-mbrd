@@ -321,6 +321,10 @@ extern void  *osal_timer_event_delete ( uint8_t task_id, uint8_t event_id )
     {
         osal_timer_cback_delete( p_timer_match );
     }
+    else
+    {
+        osal_event_clr( task_id, event_id );
+    }
 
     return (void *)p_timer_match;
 }

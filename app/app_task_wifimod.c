@@ -119,6 +119,18 @@ void app_task_wifimod( uint8_t task_id, uint8_t event_id )
             app_event_wifimod_update_state( hal_wifimod_play_state() );
         }
         break;
+
+        case TASK_EVT_APP_WIFIMOD_HN_TIMEOUT:
+        {
+            app_event_wifimod_hn_timeout();
+        }
+        break;
+
+        case TASK_EVT_APP_WIFIMOD_HN_DISCONNECT:
+        {
+            app_event_wifimod_hn_disconnect();
+        }
+        break;
         
         default:
             APP_ASSERT_FORCED();

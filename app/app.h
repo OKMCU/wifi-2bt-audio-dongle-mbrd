@@ -3,6 +3,8 @@
 
 #include "app_config.h"
 #include "app_assert.h"
+#include "app_info.h"
+
 #include "app_task_main.h"
 #include "app_event_main.h"
 

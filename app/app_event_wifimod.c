@@ -20,9 +20,9 @@
  **************************************************************************************************/
 #include "osal.h"
 #include "hal.h"
-#include "app_config.h"
-#include "app_assert.h"
-#include "app_event_wifimod.h"
+#include "app.h"
+
+#include "main.h"
 
 #include <string.h>
 #include "stringx.h"
@@ -58,18 +58,26 @@ extern void app_event_wifimod_update_mode( uint8_t mode )
     hal_cli_print_uint( mode );
     hal_cli_print_str( ".\r\n" );
 
+    osal_timer_event_delete( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_LED_WIFIB_CRS_BLK );
+    osal_timer_event_delete( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_LED_WIFIR_CRS_BLK );
+
+    app_info.wifi_state_prev = app_info.wifi_state_curr;
+    
     switch (mode)
     {
         case HAL_WIFIMOD_MODE_CFG:
             LED_WIFI_IND_MODE_CFG();
+            app_info.wifi_state_curr = WIFI_STATE_CFG;
         break;
 
         case HAL_WIFIMOD_MODE_HN:
             LED_WIFI_IND_MODE_HN();
+            app_info.wifi_state_curr = WIFI_STATE_HN;
         break;
 
         case HAL_WIFIMOD_MODE_SA:
             LED_WIFI_IND_MODE_SA();
+            app_info.wifi_state_curr = WIFI_STATE_SA;
         break;
 
         default:
@@ -90,6 +98,8 @@ extern void app_event_wifimod_update_volume( uint8_t vol )
     hal_cli_print_str( "Wi-Fi module vol is " );
     hal_cli_print_uint( vol );
     hal_cli_print_str( ".\r\n" );
+
+    app_info.vol = vol;
 }
 
 extern void app_event_wifimod_update_state( uint8_t state )
@@ -98,7 +108,24 @@ extern void app_event_wifimod_update_state( uint8_t state )
     hal_cli_print_uint( state );
     hal_cli_print_str( ".\r\n" );
 }
- 
+
+extern void app_event_wifimod_hn_timeout ( void )
+{
+    osal_timer_event_delete( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_LED_WIFIB_CRS_BLK );
+    osal_timer_event_delete( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_LED_WIFIR_CRS_BLK );
+    
+    LED_WIFI_IND_MODE_CFG_INIT();
+    app_info.wifi_state_curr = WIFI_STATE_CFG_INIT;
+    hal_cli_print_str( "Wi-Fi module failed to connect to router. Entering config mode.\r\n" );
+}
+
+extern void app_event_wifimod_hn_disconnect( void )
+{
+    LED_WIFI_IND_MODE_CFG_INIT();
+    app_info.wifi_state_curr = WIFI_STATE_CFG_INIT;
+    hal_cli_print_str( "Wi-Fi disconnected from router.\r\n" );
+}
+
 /**************************************************************************************************
 **************************************************************************************************/
 

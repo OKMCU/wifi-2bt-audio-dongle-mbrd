@@ -45,6 +45,8 @@ extern void app_event_wifimod_update_mode( uint8_t mode );
 extern void app_event_wifimod_update_source( uint8_t src );
 extern void app_event_wifimod_update_volume( uint8_t vol );
 extern void app_event_wifimod_update_state( uint8_t state );
+extern void app_event_wifimod_hn_timeout( void );
+extern void app_event_wifimod_hn_disconnect( void );
 
 #ifdef __cplusplus
 }

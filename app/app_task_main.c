@@ -48,13 +48,24 @@ extern void app_task_main ( uint8_t task_id, uint8_t event_id )
         case TASK_EVT_APP_MAIN_POR:
         {
             app_event_main_por();
-            osal_timer_event_create( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_INIT, 100 );
         }
         break;
 
         case TASK_EVT_APP_MAIN_INIT:
         {
             app_event_main_init();
+        }
+        break;
+
+        case TASK_EVT_APP_MAIN_LED_WIFIR_CRS_BLK:
+        {
+            app_event_main_led_wifir_cross_blink();
+        }
+        break;
+
+        case TASK_EVT_APP_MAIN_LED_WIFIB_CRS_BLK:
+        {
+            app_event_main_led_wifib_cross_blink();
         }
         break;
 

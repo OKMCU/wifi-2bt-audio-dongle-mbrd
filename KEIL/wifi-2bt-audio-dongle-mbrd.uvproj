@@ -748,6 +748,11 @@
               <FileType>1</FileType>
               <FilePath>..\app\app_event_main.c</FilePath>
             </File>
+            <File>
+              <FileName>app_info.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\app_info.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
