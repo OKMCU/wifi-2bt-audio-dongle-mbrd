@@ -122,42 +122,48 @@ extern void app_event_wifimod_update_source( uint8_t src )
     hal_cli_print_str( ".\r\n" );
 
     if( src == HAL_WIFIMOD_SRC_NONE )
-        app_info.src = AUDIO_SOURCE_NONE;
+        src = AUDIO_SOURCE_NONE;
     else if( src == HAL_WIFIMOD_SRC_AUXIN )
-        app_info.src = AUDIO_SOURCE_AUXIN;
+        src = AUDIO_SOURCE_AUXIN;
     else if( src == HAL_WIFIMOD_SRC_SD )
-        app_info.src = AUDIO_SOURCE_SD;
+        src = AUDIO_SOURCE_SD;
     else
-        app_info.src = AUDIO_SOURCE_WIFI;
+        src = AUDIO_SOURCE_WIFI;
 
-    switch ( app_info.src )
+    if( src != app_info.src )
     {
-        case AUDIO_SOURCE_NONE:
+        app_info.src = src;
+        switch ( app_info.src )
         {
-            hal_dsp_set_vol( 0 );
-            DSP_SET_CHANNEL_NONE();
-        }
-        break;
+            case AUDIO_SOURCE_NONE:
+            {
+                hal_led_set( HAL_LED_AUX, HAL_LED_MODE_OFF );
+                hal_dsp_set_vol( 0 );
+                DSP_SET_CHANNEL_NONE();
+            }
+            break;
 
-        case AUDIO_SOURCE_AUXIN:
-        {
-            hal_dsp_set_vol( 0 );
-            DSP_SET_CHANNEL_AUXIN();
-            osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
-        }
-        break;
+            case AUDIO_SOURCE_AUXIN:
+            {
+                hal_led_set( HAL_LED_AUX, HAL_LED_MODE_ON );
+                hal_dsp_set_vol( 0 );
+                DSP_SET_CHANNEL_AUXIN();
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+            }
+            break;
 
-        case AUDIO_SOURCE_SD:
-        case AUDIO_SOURCE_WIFI:
-        {
-            hal_dsp_set_vol( 0 );
-            DSP_SET_CHANNEL_WIFIMOD();
-            osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+            case AUDIO_SOURCE_SD:
+            case AUDIO_SOURCE_WIFI:
+            {
+                hal_led_set( HAL_LED_AUX, HAL_LED_MODE_OFF );
+                hal_dsp_set_vol( 0 );
+                DSP_SET_CHANNEL_WIFIMOD();
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+            }
+            break;
+            
         }
-        break;
-        
     }
-    
 }
 
 extern void app_event_wifimod_update_volume( uint8_t vol )
