@@ -69,6 +69,12 @@ extern void app_task_main ( uint8_t task_id, uint8_t event_id )
         }
         break;
 
+        case TASK_EVT_APP_MAIN_SET_DSP_VOL:
+        {
+            app_event_main_set_dsp_vol();
+        }
+        break;
+
         case TASK_EVT_APP_MAIN_OSAL_EXCEPTION:
         {
             hal_cli_print_str( "ERROR!\r\n" );
@@ -89,7 +95,6 @@ extern void app_task_main ( uint8_t task_id, uint8_t event_id )
             hal_cli_print_str( "APP EXCEPTION!\r\n" );
         }
         break;
-        
 
         default:
             APP_ASSERT_FORCED();

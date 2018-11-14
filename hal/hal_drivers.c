@@ -61,6 +61,7 @@ extern void hal_driver_init( void )
     hal_bt_init();
     hal_lucicmd_init();
     hal_wifimod_init();
+    hal_multiplexer_init();
 }
 
 /**************************************************************************************************

@@ -110,6 +110,31 @@ extern void app_event_main_led_wifib_cross_blink( void )
     hal_led_set( HAL_LED_WIFIR, HAL_LED_MODE_OFF );
     hal_led_set( HAL_LED_WIFIB, HAL_LED_MODE_ON );
 }
+
+extern void app_event_main_set_dsp_vol( void )
+{
+    uint32_t dsp_vol;
+    
+    switch ( app_info.src )
+    {
+        case AUDIO_SOURCE_AUXIN:
+        case AUDIO_SOURCE_BT_MIXER:
+        case AUDIO_SOURCE_BT_PARTY:
+        case AUDIO_SOURCE_BT_SINGLE:
+            dsp_vol = (uint32_t)app_info.vol*HAL_DSP_VOL_MAX/100;
+            if( hal_dsp_get_vol() != dsp_vol )
+                hal_dsp_set_vol( dsp_vol );
+        break;
+
+        case AUDIO_SOURCE_SD:
+        case AUDIO_SOURCE_WIFI:
+            if( hal_dsp_get_vol() != HAL_DSP_VOL_MAX )
+            {
+                hal_dsp_set_vol( HAL_DSP_VOL_MAX );
+            }
+        break;
+    }
+}
 /**************************************************************************************************
 **************************************************************************************************/
 

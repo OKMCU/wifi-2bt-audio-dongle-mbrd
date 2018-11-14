@@ -961,7 +961,10 @@ extern void     hal_dsp_set_vol(uint32_t vol)
     cmd[30] = (uint8_t)((vol >> 16) & 0xFF);
     cmd[31] = (uint8_t)((vol >>  8) & 0xFF);
     cmd[32] = (uint8_t)((vol >>  0) & 0xFF);
-    
+
+    hal_dsp_write(start, sizeof(start));
+    hal_dsp_write(cmd, sizeof(cmd));
+    hal_dsp_write(end, sizeof(end));
 }
 
 extern uint32_t hal_dsp_get_vol(void)

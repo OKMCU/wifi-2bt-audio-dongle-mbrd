@@ -683,6 +683,11 @@
               <FileType>1</FileType>
               <FilePath>..\hal\hal_wifimod.c</FilePath>
             </File>
+            <File>
+              <FileName>hal_multiplexer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\hal\hal_multiplexer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

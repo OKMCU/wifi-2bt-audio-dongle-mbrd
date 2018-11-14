@@ -45,6 +45,7 @@ extern void app_event_main_por( void );
 extern void app_event_main_init( void );
 extern void app_event_main_led_wifir_cross_blink( void );
 extern void app_event_main_led_wifib_cross_blink( void );
+extern void app_event_main_set_dsp_vol( void );
 
 #ifdef __cplusplus
 }
