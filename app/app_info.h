@@ -26,6 +26,7 @@ typedef struct app_info_t {
     uint8_t wifi_state_curr;
     uint8_t vol;
     uint8_t src;
+    uint8_t bt_mode;
 } APP_INFO_t;
 /* ------------------------------------------------------------------------------------------------
  *                                           CONSTANTS
@@ -44,9 +45,12 @@ typedef struct app_info_t {
 #define AUDIO_SOURCE_AUXIN              1
 #define AUDIO_SOURCE_SD                 2
 #define AUDIO_SOURCE_WIFI               3
-#define AUDIO_SOURCE_BT_SINGLE          4
-#define AUDIO_SOURCE_BT_PARTY           5
-#define AUDIO_SOURCE_BT_MIXER           6
+#define AUDIO_SOURCE_BT                 4
+
+#define BT_MODE_OFF                     0
+#define BT_MODE_SINGLE                  1
+#define BT_MODE_PARTY                   2
+#define BT_MODE_MIXER                   3
 
 /* ------------------------------------------------------------------------------------------------
  *                                          Prototypes

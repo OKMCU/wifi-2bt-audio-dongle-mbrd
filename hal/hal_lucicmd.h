@@ -146,5 +146,7 @@ extern void     hal_lucicmd_send_PlayCtrl      ( uint8_t play_ctrl );
 extern void     hal_lucicmd_send_QryMacID      ( void );
 extern void     hal_lucicmd_send_IsAllowed     ( void );
 extern void     hal_lucicmd_send_IsNotAllowed  ( void );
+extern void     hal_lucicmd_send_ExtSrcStart   ( void );
+extern void     hal_lucicmd_send_ExtSrcStop    ( void );
 
 #endif /* __HAL_LUCICMD_H__ */

@@ -157,6 +157,88 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
         }
         break;
 
+        case BUILD_UINT16( HAL_KEY_BT, APP_EVENT_KEY_LONG ):
+        {
+            if( app_info.bt_mode == BT_MODE_OFF )
+            {
+                app_info.bt_mode = BT_MODE_SINGLE;
+                hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
+                hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
+                LED_BT_IND_MODE_SINGLE();
+                LED_BT0_IND_STATE_DISCOVERABLE();
+                LED_BT1_IND_STATE_OFF();
+
+                hal_dsp_set_vol( 0 );
+                DSP_SET_CHANNEL_BT();
+                hal_wifimod_set_src( HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU );
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+                
+                hal_cli_print_str( "Bluetooth mode = " );
+                hal_cli_print_str( "SINGLE.\r\n" );
+            }
+            else
+            {
+                app_info.bt_mode = BT_MODE_OFF;
+                hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_OFF );
+                hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
+                LED_BT_IND_MODE_OFF();
+                LED_BT0_IND_STATE_OFF();
+                LED_BT1_IND_STATE_OFF();
+
+                hal_dsp_set_vol( 0 );
+                DSP_SET_CHANNEL_NONE();
+                hal_wifimod_set_src( HAL_WIFIMOD_SRC_NONE );
+                
+                hal_cli_print_str( "Bluetooth mode = " );
+                hal_cli_print_str( "OFF.\r\n" );
+            }
+        }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_BT, APP_EVENT_KEY_SHORT ):
+        {
+            if( app_info.bt_mode != BT_MODE_OFF )
+            {
+                app_info.bt_mode++;
+                if( app_info.bt_mode == BT_MODE_PARTY )
+                {
+                    hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
+                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_PAIRING );
+                    LED_BT_IND_MODE_PARTY();
+                    LED_BT0_IND_STATE_DISCOVERABLE();
+                    LED_BT1_IND_STATE_DISCOVERABLE();
+                    
+                    hal_cli_print_str( "Bluetooth mode = " );
+                    hal_cli_print_str( "PARTY.\r\n" );
+                    
+                }
+                else if( app_info.bt_mode == BT_MODE_MIXER )
+                {
+                    hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
+                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_PAIRING );
+                    LED_BT_IND_MODE_MIXER();
+                    LED_BT0_IND_STATE_DISCOVERABLE();
+                    LED_BT1_IND_STATE_DISCOVERABLE();
+                    
+                    hal_cli_print_str( "Bluetooth mode = " );
+                    hal_cli_print_str( "MIXER.\r\n" );
+                }
+                else
+                {
+                    app_info.bt_mode = BT_MODE_SINGLE;
+                    hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
+                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
+                    LED_BT_IND_MODE_SINGLE();
+                    LED_BT0_IND_STATE_DISCOVERABLE();
+                    LED_BT1_IND_STATE_OFF();
+                    
+                    hal_cli_print_str( "Bluetooth mode = " );
+                    hal_cli_print_str( "SINGLE.\r\n" );
+                }
+            }
+        }
+        break;
+
         default:
         break;
     }

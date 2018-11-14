@@ -52,7 +52,7 @@ extern "C"
 //#define HAL_LED_7     BV(7)
 
 #define HAL_LED_PARTY   HAL_LED_0
-#define HAL_LED_DJ      HAL_LED_1
+#define HAL_LED_MIXER   HAL_LED_1
 #define HAL_LED_BT0     HAL_LED_2
 #define HAL_LED_BT1     HAL_LED_3
 #define HAL_LED_AUX     HAL_LED_4

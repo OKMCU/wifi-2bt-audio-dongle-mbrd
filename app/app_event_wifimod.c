@@ -45,6 +45,13 @@
 extern void app_event_wifimod_bootup( void )
 {
     hal_cli_print_str( "Wi-Fi module boot up.\r\n" );
+    if( app_info.src != AUDIO_SOURCE_NONE )
+    {
+        if( app_info.src == AUDIO_SOURCE_AUXIN )
+        {
+            hal_wifimod_set_src( HAL_WIFIMOD_SRC_AUXIN );
+        }
+    }
 }
 
 extern void app_event_wifimod_reboot( void )
@@ -127,6 +134,8 @@ extern void app_event_wifimod_update_source( uint8_t src )
         src = AUDIO_SOURCE_AUXIN;
     else if( src == HAL_WIFIMOD_SRC_SD )
         src = AUDIO_SOURCE_SD;
+    else if( src == HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU )
+        src = AUDIO_SOURCE_BT;
     else
         src = AUDIO_SOURCE_WIFI;
 
@@ -161,7 +170,14 @@ extern void app_event_wifimod_update_source( uint8_t src )
                 osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
             }
             break;
-            
+
+            case AUDIO_SOURCE_BT:
+            {
+                hal_dsp_set_vol( 0 );
+                DSP_SET_CHANNEL_BT();
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+            }
+            break;
         }
     }
 }
@@ -178,8 +194,17 @@ extern void app_event_wifimod_update_volume( uint8_t vol )
 
 extern void app_event_wifimod_update_state( uint8_t state )
 {
+    const char *p_names[] = {
+        "PLAYING",
+        "STOPPED",
+        "PAUSED",
+        "CONNECTING",
+        "RECEIVING",
+        "BUFFERING",
+    };
+
     hal_cli_print_str( "Wi-Fi module play state is " );
-    hal_cli_print_uint( state );
+    hal_cli_print_str( p_names[state] );
     hal_cli_print_str( ".\r\n" );
 }
 

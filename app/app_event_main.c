@@ -68,9 +68,10 @@ extern void app_event_main_por( void )
     hal_cli_print_str( ".\r\n" );
 
     app_info.src = AUDIO_SOURCE_NONE;
-    app_info.vol = 0;
+    app_info.vol = 50;//need to load from EEPROM
     app_info.wifi_state_curr = WIFI_STATE_OFF;
     app_info.wifi_state_prev = WIFI_STATE_OFF;
+    app_info.bt_mode = BT_MODE_OFF;
     
     hal_dsp_enable();
     hal_wifimod_enable();
@@ -118,9 +119,7 @@ extern void app_event_main_set_dsp_vol( void )
     switch ( app_info.src )
     {
         case AUDIO_SOURCE_AUXIN:
-        case AUDIO_SOURCE_BT_MIXER:
-        case AUDIO_SOURCE_BT_PARTY:
-        case AUDIO_SOURCE_BT_SINGLE:
+        case AUDIO_SOURCE_BT:
             dsp_vol = (uint32_t)app_info.vol*HAL_DSP_VOL_MAX/100;
             if( hal_dsp_get_vol() != dsp_vol )
                 hal_dsp_set_vol( dsp_vol );

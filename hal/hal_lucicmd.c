@@ -346,6 +346,36 @@ extern void hal_lucicmd_send_IsNotAllowed     ( void )
     hal_lucicmd_send( &lucicmd );
 }
 
+extern void     hal_lucicmd_send_ExtSrcStart   ( void )
+{
+    HAL_LUCI_CMD_t lucicmd;
+
+    lucicmd.remote_id = 0xAAAA;
+    lucicmd.msgbox = HAL_LUCICMD_MSGBOX_ExternalPlayback;
+    lucicmd.type = HAL_LUCICMD_TYPE_SET;
+    lucicmd.status = HAL_LUCICMD_STATUS_NA;
+    lucicmd.p_data = "START";
+    lucicmd.len = 5;
+    lucicmd.crc = hal_lucicmd_crc16_ccitt( &lucicmd );
+
+    hal_lucicmd_send( &lucicmd );
+}
+
+extern void     hal_lucicmd_send_ExtSrcStop    ( void )
+{
+    HAL_LUCI_CMD_t lucicmd;
+
+    lucicmd.remote_id = 0xAAAA;
+    lucicmd.msgbox = HAL_LUCICMD_MSGBOX_ExternalPlayback;
+    lucicmd.type = HAL_LUCICMD_TYPE_SET;
+    lucicmd.status = HAL_LUCICMD_STATUS_NA;
+    lucicmd.p_data = "STOP";
+    lucicmd.len = 4;
+    lucicmd.crc = hal_lucicmd_crc16_ccitt( &lucicmd );
+
+    hal_lucicmd_send( &lucicmd );
+}
+
 
 extern void hal_lucicmd_driver_handle_rxne( void )
 {

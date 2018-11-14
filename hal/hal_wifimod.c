@@ -107,11 +107,22 @@ extern void     hal_wifimod_set_src( uint8_t src )
                 hal_lucicmd_send_AuxInStart();
             }
         }
+        else if( src == HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU )
+        {
+            if( wifi_mod_info.src_current != HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU )
+            {
+                hal_lucicmd_send_ExtSrcStart();
+            }
+        }
         else
         {
             if( wifi_mod_info.src_current == HAL_WIFIMOD_SRC_AUXIN )
             {
                 hal_lucicmd_send_AuxInStop();
+            }
+            else if( wifi_mod_info.src_current == HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU )
+            {
+                hal_lucicmd_send_ExtSrcStop();
             }
         }
     }
