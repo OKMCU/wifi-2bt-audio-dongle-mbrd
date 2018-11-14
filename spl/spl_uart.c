@@ -296,8 +296,9 @@ extern void spl_uart_deinit( uint8_t port )
 #if SPL_UART0_EN > 0
 extern void spl_uart0_isr( void )
 {
-	uint8_t u8tmp = 0xFF;
     uint32_t u32IntSts;
+	uint8_t u8tmp = 0xFF;
+    int8_t rx_cnt = 0;
     
     u32IntSts = UART0->ISR;
     
@@ -308,16 +309,24 @@ extern void spl_uart0_isr( void )
         {
             /* Get the character from UART Buffer */
             u8tmp = UART_READ( UART0 );
-            if( !fifo_buf_full(&uart0_rx_fifo) )
+            if( rx_cnt >= 0 )
             {
-                fifo_buf_put( &uart0_rx_fifo, u8tmp );
-            }
-            else
-            {
-                SPL_UART0_CALLBACK( SPL_UART_ISR_EVT_RXD_FULL );
+                if( !fifo_buf_full(&uart0_rx_fifo) )
+                {
+                    fifo_buf_put( &uart0_rx_fifo, u8tmp );
+                    rx_cnt++;
+                }
+                else
+                {
+                    fifo_buf_flush(&uart0_rx_fifo);
+                    rx_cnt = -1;
+                    SPL_UART0_CALLBACK( SPL_UART_ISR_EVT_RXD_FULL );
+                }
             }
         }
-        SPL_UART0_CALLBACK( SPL_UART_ISR_EVT_RXD );
+
+        if( rx_cnt > 0 )
+            SPL_UART0_CALLBACK( SPL_UART_ISR_EVT_RXD );
     }
     
     
@@ -345,8 +354,9 @@ extern void spl_uart0_isr( void )
 #if SPL_UART1_EN > 0
 extern void spl_uart1_isr( void )
 {
-	uint8_t u8tmp = 0xFF;
     uint32_t u32IntSts;
+	uint8_t u8tmp = 0xFF;
+    int8_t rx_cnt = 0;
     
     u32IntSts = UART1->ISR;
     
@@ -357,16 +367,24 @@ extern void spl_uart1_isr( void )
         {
             /* Get the character from UART Buffer */
             u8tmp = UART_READ( UART1 );
-            if( !fifo_buf_full(&uart1_rx_fifo) )
+            if( rx_cnt >= 0 )
             {
-                fifo_buf_put( &uart1_rx_fifo, u8tmp );
-            }
-            else
-            {
-                SPL_UART1_CALLBACK( SPL_UART_ISR_EVT_RXD_FULL );
+                if( !fifo_buf_full(&uart1_rx_fifo) )
+                {
+                    fifo_buf_put( &uart1_rx_fifo, u8tmp );
+                    rx_cnt++;
+                }
+                else
+                {
+                    fifo_buf_flush(&uart1_rx_fifo);
+                    rx_cnt = -1;
+                    SPL_UART1_CALLBACK( SPL_UART_ISR_EVT_RXD_FULL );
+                }
             }
         }
-        SPL_UART1_CALLBACK( SPL_UART_ISR_EVT_RXD );
+
+        if( rx_cnt > 0 )
+            SPL_UART1_CALLBACK( SPL_UART_ISR_EVT_RXD );
     }
     
     
