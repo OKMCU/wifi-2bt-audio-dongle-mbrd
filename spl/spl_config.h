@@ -43,7 +43,7 @@
 #endif /* (SPL_UART0_EN > 0) */
 #if (SPL_UART1_EN > 0)
 #define SPL_UART1_BAUDRATE                  57600
-#define SPL_UART1_RX_CACHE_SIZE             16
+#define SPL_UART1_RX_CACHE_SIZE             64
 #define SPL_UART1_TX_CACHE_SIZE             16
 #define SPL_UART1_CALLBACK                  spl_uart1_callback
 #endif /* (SPL_UART1_EN > 0) */
