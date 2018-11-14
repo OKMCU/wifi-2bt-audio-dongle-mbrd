@@ -334,11 +334,6 @@ extern void hal_wifimod_driver_handle_mode_ctrl( void )
     }
 }
 
-extern void hal_wifimod_driver_handle_src_ctrl( void )
-{
-    
-}
-
 extern void hal_wifimod_driver_handle_hn_timeout( void )
 {
     if( wifi_mod_info.mode_target == HAL_WIFIMOD_MODE_SA )
@@ -352,6 +347,22 @@ extern void hal_wifimod_driver_handle_hn_timeout( void )
         hal_lucicmd_send_SetWiFiModeCFG();
     }
 }
+
+extern void hal_wifimod_driver_handle_rx_ovf( void )
+{
+    if( p_rx_ctrl != NULL )
+    {
+        if( p_rx_ctrl->p_data != NULL )
+        {
+            osal_mem_free( p_rx_ctrl->p_data );
+        }
+        osal_mem_free( p_rx_ctrl );
+        p_rx_ctrl = NULL;
+    }
+
+    osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_MISS_LUCICMD );
+}
+
 
 static void hal_wifimod_info_init( void )
 {

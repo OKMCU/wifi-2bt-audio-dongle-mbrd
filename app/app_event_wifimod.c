@@ -88,7 +88,7 @@ extern void app_event_wifimod_update_mode( uint8_t mode )
 
 extern void app_event_wifimod_update_source( uint8_t src )
 {
-    const char *p_names = {
+    const char *p_names[] = {
         "NONE",//                 0
         "AIRPLAY",//              1
         "DMR",//                  2
@@ -192,6 +192,11 @@ extern void app_event_wifimod_hn_disconnect( void )
     LED_WIFI_IND_MODE_CFG_INIT();
     app_info.wifi_state_curr = WIFI_STATE_CFG_INIT;
     hal_cli_print_str( "Wi-Fi disconnected from router.\r\n" );
+}
+
+extern void app_event_wifimod_miss_lucicmd( void )
+{
+    hal_cli_print_str( "Miss LS5B Luci command!\r\n" );
 }
 
 /**************************************************************************************************

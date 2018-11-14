@@ -35,11 +35,13 @@ extern void hal_cli_driver_handle_rxne( void );
 extern void hal_cli_driver_handle_txe( void );
 extern void hal_uibrd_driver_handle_trig_irq( void );
 extern void hal_uibrd_driver_handle_poll_irq( void );
+extern void hal_lucicmd_driver_handle_rxovf( void );
 extern void hal_lucicmd_driver_handle_rxne( void );
 extern void hal_lucicmd_driver_handle_txe( void );
 extern void hal_wifimod_driver_handle_rx_bytes( uint8_t *p_msg, uint16_t len );
 extern void hal_wifimod_driver_handle_mode_ctrl( void );
 extern void hal_wifimod_driver_handle_hn_timeout( void );
+extern void hal_wifimod_driver_handle_rx_ovf( void );
 /**************************************************************************************************
  * @fn          hal_driver_init
  *
@@ -78,6 +80,10 @@ extern void hal_task_driver_basic ( uint8_t task_id, uint8_t event_id )
 {
     switch ( event_id )
     {
+        case TASK_EVT_HAL_DRIVERS_LUCICMD_RXOVF:
+            hal_lucicmd_driver_handle_rxovf();
+        break;
+            
         case TASK_EVT_HAL_DRIVERS_LUCICMD_RXNE:
             hal_lucicmd_driver_handle_rxne();
         break;
@@ -128,6 +134,10 @@ extern void hal_task_driver_wifimod( uint8_t task_id, uint8_t event_id )
         }
         break;
 
+        case TASK_EVT_HAL_DRIVER_WIFIMOD_RX_OVF:
+            hal_wifimod_driver_handle_rx_ovf();
+        break;
+        
         case TASK_EVT_HAL_DRIVER_WIFIMOD_RESET:
             hal_wifimod_enable();
         break;

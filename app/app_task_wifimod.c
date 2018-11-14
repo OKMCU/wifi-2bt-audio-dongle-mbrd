@@ -131,6 +131,12 @@ void app_task_wifimod( uint8_t task_id, uint8_t event_id )
             app_event_wifimod_hn_disconnect();
         }
         break;
+
+        case TASK_EVT_APP_WIFIMOD_MISS_LUCICMD:
+        {
+            app_event_wifimod_miss_lucicmd();
+        }
+        break;
         
         default:
             APP_ASSERT_FORCED();

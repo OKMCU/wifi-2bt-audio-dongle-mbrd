@@ -402,6 +402,11 @@ extern void hal_lucicmd_driver_handle_txe( void )
     }
 }
 
+extern void hal_lucicmd_driver_handle_rxovf( void )
+{
+    osal_event_set( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_RX_OVF );
+}
+
 extern void spl_uart1_callback( uint8_t event )
 {
     switch (event)
@@ -415,7 +420,7 @@ extern void spl_uart1_callback( uint8_t event )
         break;
         
         case SPL_UART_ISR_EVT_RXD_FULL:
-            //osal_event_set( OSAL_TASK_ID_HAL_DRIVERS, OSAL_TASK_EVT_HAL_CLI_RXF );
+            osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_LUCICMD_RXOVF );
         break;
 
         default:
