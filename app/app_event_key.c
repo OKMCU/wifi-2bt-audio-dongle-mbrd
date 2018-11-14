@@ -22,7 +22,7 @@
 #include "hal.h"
 #include "app.h"
 
-#include "app_event_key.h"
+#include "main.h"
 
 #include <string.h>
 #include "stringx.h"
@@ -131,6 +131,28 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 hal_wifimod_set_mode( HAL_WIFIMOD_MODE_CFG );
                 app_info.wifi_state_prev = app_info.wifi_state_curr;
                 app_info.wifi_state_curr = WIFI_STATE_CFG_INIT;
+            }
+        }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_AUX, APP_EVENT_KEY_SHORT ):
+        {
+            if( app_info.src == AUDIO_SOURCE_AUXIN )
+            {
+                app_info.src = AUDIO_SOURCE_NONE;
+                hal_led_set( HAL_LED_AUX, HAL_LED_MODE_OFF );
+                hal_dsp_set_vol( 0 );
+                hal_wifimod_set_src( HAL_WIFIMOD_SRC_NONE );
+                DSP_SET_CHANNEL_NONE();
+            }
+            else
+            {
+                app_info.src = AUDIO_SOURCE_AUXIN;
+                hal_led_set( HAL_LED_AUX, HAL_LED_MODE_ON );
+                hal_dsp_set_vol( 0 );
+                hal_wifimod_set_src( HAL_WIFIMOD_SRC_AUXIN );
+                DSP_SET_CHANNEL_AUXIN();
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
             }
         }
         break;
