@@ -107,7 +107,7 @@ extern void hal_lucicmd_send( const HAL_LUCI_CMD_t *p_lucicmd )
         hal_lucicmd_send_byte( p_lucicmd->p_data[i] );
     }
 
-    osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_LUCICMD_TXE );
+    osal_event_set( TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_LUCICMD_TXE );
 }
 
 extern void hal_lucicmd_send_IsHostPresent ( void )
@@ -432,25 +432,20 @@ extern void hal_lucicmd_driver_handle_txe( void )
     }
 }
 
-extern void hal_lucicmd_driver_handle_rxovf( void )
-{
-    osal_event_set( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_RX_OVF );
-}
-
 extern void spl_uart1_callback( uint8_t event )
 {
     switch (event)
     {
         case SPL_UART_ISR_EVT_RXD:
-            osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_LUCICMD_RXNE );
+            osal_event_set( TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_LUCICMD_RXNE );
         break;
 
         case SPL_UART_ISR_EVT_TXD_EMPTY:
-            osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_LUCICMD_TXE );
+            osal_event_set( TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_LUCICMD_TXE );
         break;
         
         case SPL_UART_ISR_EVT_RXD_FULL:
-            osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_LUCICMD_RXOVF );
+            osal_event_set( TASK_ID_HAL_DRIVER_WIFIMOD, TASK_EVT_HAL_DRIVER_WIFIMOD_RX_OVF );
         break;
 
         default:

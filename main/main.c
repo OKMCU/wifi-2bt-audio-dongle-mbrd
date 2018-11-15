@@ -32,7 +32,7 @@ int main( void )
     hal_driver_init();
     
     /* Create HAL Tasks */
-    osal_task_create( hal_task_driver_basic, TASK_ID_HAL_DRIVERS );
+    osal_task_create( hal_task_driver_basic, TASK_ID_HAL_DRIVER_BASIC );
     osal_task_create( hal_task_driver_wifimod, TASK_ID_HAL_DRIVER_WIFIMOD );
     
     /* Create APP Tasks */

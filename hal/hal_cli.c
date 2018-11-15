@@ -49,7 +49,7 @@ extern void hal_cli_print_char(char c)
     HAL_ASSERT( tx_fifo != NULL );
     pc = osal_fifo_put( tx_fifo, (uint8_t)c );
     HAL_ASSERT( pc != NULL );
-    osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_CLI_TXE );
+    osal_event_set( TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_CLI_TXE );
 }
 
 extern void hal_cli_print_str(const char *s)
@@ -192,11 +192,11 @@ extern void spl_uart0_callback( uint8_t event )
     switch (event)
     {
         case SPL_UART_ISR_EVT_RXD:
-            osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_CLI_RXNE );
+            osal_event_set( TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_CLI_RXNE );
         break;
 
         case SPL_UART_ISR_EVT_TXD_EMPTY:
-            osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_CLI_TXE );
+            osal_event_set( TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_CLI_TXE );
         break;
         
         case SPL_UART_ISR_EVT_RXD_FULL:

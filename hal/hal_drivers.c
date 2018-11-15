@@ -35,7 +35,6 @@ extern void hal_cli_driver_handle_rxne( void );
 extern void hal_cli_driver_handle_txe( void );
 extern void hal_uibrd_driver_handle_trig_irq( void );
 extern void hal_uibrd_driver_handle_poll_irq( void );
-extern void hal_lucicmd_driver_handle_rxovf( void );
 extern void hal_lucicmd_driver_handle_rxne( void );
 extern void hal_lucicmd_driver_handle_txe( void );
 extern void hal_wifimod_driver_handle_rx_bytes( uint8_t *p_msg, uint16_t len );
@@ -80,31 +79,27 @@ extern void hal_task_driver_basic ( uint8_t task_id, uint8_t event_id )
 {
     switch ( event_id )
     {
-        case TASK_EVT_HAL_DRIVERS_LUCICMD_RXOVF:
-            hal_lucicmd_driver_handle_rxovf();
-        break;
-            
-        case TASK_EVT_HAL_DRIVERS_LUCICMD_RXNE:
+        case TASK_EVT_HAL_DRIVER_BASIC_LUCICMD_RXNE:
             hal_lucicmd_driver_handle_rxne();
         break;
         
-        case TASK_EVT_HAL_DRIVERS_LUCICMD_TXE:
+        case TASK_EVT_HAL_DRIVER_BASIC_LUCICMD_TXE:
             hal_lucicmd_driver_handle_txe();
         break;
         
-        case TASK_EVT_HAL_DRIVERS_CLI_RXNE:
+        case TASK_EVT_HAL_DRIVER_BASIC_CLI_RXNE:
             hal_cli_driver_handle_rxne();
         break;
 
-        case TASK_EVT_HAL_DRIVERS_CLI_TXE:
+        case TASK_EVT_HAL_DRIVER_BASIC_CLI_TXE:
             hal_cli_driver_handle_txe();
         break;
 
-        case TASK_EVT_HAL_DRIVERS_UIBRD_TRIG_IRQ:
+        case TASK_EVT_HAL_DRIVER_BASIC_UIBRD_TRIG_IRQ:
             hal_uibrd_driver_handle_trig_irq();
         break;
 
-        case TASK_EVT_HAL_DRIVERS_UIBRD_POLL_IRQ:
+        case TASK_EVT_HAL_DRIVER_BASIC_UIBRD_POLL_IRQ:
             hal_uibrd_driver_handle_poll_irq();
         break;
         

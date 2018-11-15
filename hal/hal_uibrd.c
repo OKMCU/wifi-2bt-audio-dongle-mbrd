@@ -212,7 +212,7 @@ extern uint8_t  hal_uibrd_irq_evt( void )
 extern void hal_uibrd_driver_handle_trig_irq ( void )
 {
     hal_uibrd_update();
-    osal_timer_event_create(TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_UIBRD_POLL_IRQ, 1);
+    osal_timer_event_create(TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_UIBRD_POLL_IRQ, 1);
 }
 
 extern void hal_uibrd_driver_handle_poll_irq ( void )
@@ -220,13 +220,13 @@ extern void hal_uibrd_driver_handle_poll_irq ( void )
     if(spl_gpio_read_pin(SPL_GPIO_PORT_3, SPL_GPIO_PIN_2) == 0)
     {
         hal_uibrd_update();
-        osal_timer_event_create(TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_UIBRD_POLL_IRQ, 1);
+        osal_timer_event_create(TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_UIBRD_POLL_IRQ, 1);
     }
 }
 
 extern void spl_extint_int0_callback( void )
 {
-    osal_event_set( TASK_ID_HAL_DRIVERS, TASK_EVT_HAL_DRIVERS_UIBRD_TRIG_IRQ );
+    osal_event_set( TASK_ID_HAL_DRIVER_BASIC, TASK_EVT_HAL_DRIVER_BASIC_UIBRD_TRIG_IRQ );
 }
 
 
