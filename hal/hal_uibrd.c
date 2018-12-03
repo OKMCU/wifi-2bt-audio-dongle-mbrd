@@ -36,6 +36,7 @@
 /***************************************************************************************************
  * GLOBAL VARIABLES
  ***************************************************************************************************/
+extern void    hal_bt_handle_uibrd_bt_state( uint8_t uibrd_bt_state );
 
 /***************************************************************************************************
  * CONSTANTS
@@ -70,7 +71,8 @@ static void hal_uibrd_update ( void )
     if( irqs & HAL_UIBRD_IRQ_UPD_BT )   //bt update event
     {
         hal_uibrd_read( HAL_UIBRD_REG_BT_STATE, &hal_uibrd_bt_state, sizeof(uint8_t) );
-        osal_event_set(TASK_ID_APP_UIBRD, TASK_EVT_APP_UIBRD_UPD_BT);
+        //osal_event_set(TASK_ID_APP_UIBRD, TASK_EVT_APP_UIBRD_UPD_BT);
+        hal_bt_handle_uibrd_bt_state( hal_uibrd_bt_state );
     }
 }
 

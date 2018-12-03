@@ -48,8 +48,8 @@ static uint8_t bt_state[2];
 
 extern void app_task_uibrd_init ( void )
 {
-     bt_state[0] = HAL_BT_STATE_UNKNOWN;
-     bt_state[1] = HAL_BT_STATE_UNKNOWN;
+     bt_state[0] = HAL_BT_STATE_OFF;
+     bt_state[1] = HAL_BT_STATE_OFF;
 }
 
 

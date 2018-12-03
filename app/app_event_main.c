@@ -86,8 +86,7 @@ extern void app_event_main_init( void )
     hal_cli_print_str( "Init UI board..." );
     hal_uibrd_irq_evt();
     hal_led_set( HAL_LED_ALL, HAL_LED_MODE_OFF );
-    BT_DISABLE( HAL_BT_MOD_0 + HAL_BT_MOD_1 );
-    BT_ENABLE( HAL_BT_MOD_0 + HAL_BT_MOD_1 );
+    hal_bt_ctrl( HAL_BT_MOD_0 + HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
     hal_cli_print_str( "OK!\r\n" );
 
     hal_cli_print_str( "Init DSP..." );

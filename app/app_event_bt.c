@@ -56,12 +56,14 @@ extern void app_event_bt_state_update( uint8_t mod, uint8_t state )
 
     APP_ASSERT(mod <= HAL_BT_MOD_1);
     APP_ASSERT(state <= HAL_BT_STATE_PLAYING);
-    
+
     hal_cli_print_str( "BT" );
-    hal_cli_print_uint( mod );
+    hal_cli_print_uint( mod == HAL_BT_MOD_0 ? 0 : 1 );
     hal_cli_print_str( " state = " );
     hal_cli_print_str( p_names[state] );
     hal_cli_print_str( ".\r\n" );
+
+    
     
 }
  
