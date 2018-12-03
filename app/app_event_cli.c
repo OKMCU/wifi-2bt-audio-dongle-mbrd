@@ -299,53 +299,65 @@ static void app_cli_cmd_bt           ( char *p_arg )
 {
     char *p_opt;
     char *p_str;
-    uint8_t mod;
-    uint8_t ctrl;
-
-    p_str = NULL;
-
-    //get "-off" "-on" "-pairing"
-    p_opt = strtok_r( p_arg, " ", &p_str );
-    //get "BT0" "BT1"
-    p_arg = strtok_r( NULL, " ", &p_str );
-
-    //check option
-    if(strcmp(p_opt, "-on") == 0)
-    {
-        ctrl = HAL_BT_CTRL_ON;
-    }
-    else if(strcmp(p_opt, "-off") == 0)
-    {
-        ctrl = HAL_BT_CTRL_OFF;
-    }
-    else if(strcmp(p_opt, "-pairing") == 0)
-    {
-        ctrl = HAL_BT_CTRL_PAIRING;
-    }
-    else
-    {
-        hal_cli_print_str( "Bad command!\r\n\r\n" );
-        return;
-    }
-
-    //check module id
-    if(strcmp(p_arg, "BT0") == 0)
-    {
-        mod = HAL_BT_MOD_0;
-    }
-    else if(strcmp(p_arg, "BT1") == 0)
-    {
-        mod = HAL_BT_MOD_1;
-    }
-    else
-    {
-        hal_cli_print_str( "Bad command!\r\n\r\n" );
-        return;
-    }
-
-    hal_bt_ctrl(mod, ctrl);
-    hal_cli_print_str( "OK!\r\n\r\n" );
+    uint32_t u32tmp;
+    uint8_t mods;
+    uint8_t pins;
+    uint8_t value;
+    uint8_t flag;
     
+    p_str = NULL;
+    flag = 0;
+
+    p_opt = strtok_r( p_arg, " ", &p_str );
+    while(p_opt)
+    {
+        //check option
+        if(strcmp(p_opt, "-d") == 0)
+        {
+            p_arg = strtok_r( NULL, " ", &p_str );
+            if( hexstr2uint( p_arg, &u32tmp ) )
+            {
+                mods = (uint8_t)u32tmp;
+                flag |= BV(0);
+            }
+        }
+        else if(strcmp(p_opt, "-p") == 0)
+        {
+            p_arg = strtok_r( NULL, " ", &p_str );
+            if( hexstr2uint( p_arg, &u32tmp ) )
+            {
+                pins = (uint8_t)u32tmp;
+                flag |= BV(1);
+            }
+        }
+        else if(strcmp(p_opt, "-v") == 0)
+        {
+            p_arg = strtok_r( NULL, " ", &p_str );
+            if( decstr2uint( p_arg, &u32tmp ) )
+            {
+                value = (uint8_t)u32tmp;
+                flag |= BV(2);
+            }
+        }
+        else
+        {
+            hal_cli_print_str( "Bad command!\r\n\r\n" );
+            return;
+        }
+
+        p_opt = strtok_r( NULL, " ", &p_str );
+    }
+
+    if( (flag & (BV(0)+BV(1)+BV(2))) == BV(0)+BV(1)+BV(2) )
+    {
+        hal_bt_ctrl_pin( mods, pins, value );
+        hal_cli_print_str( "OK!\r\n\r\n" );
+    }
+    else
+    {
+        hal_cli_print_str( "Bad command!\r\n\r\n" );
+        return;
+    }
 }
 
 static void app_cli_cmd_lucicmd ( char *p_arg )

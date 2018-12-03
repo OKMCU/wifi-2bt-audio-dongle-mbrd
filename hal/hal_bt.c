@@ -66,7 +66,7 @@ extern uint8_t hal_uibrd_bt_state;
  ***************************************************************************************************/
 extern void hal_bt_init (void)
 {
-    
+
 }
 
 /***************************************************************************************************
@@ -96,9 +96,13 @@ extern uint8_t hal_bt_get_state ( uint8_t mod )
     {
         state = HAL_UIBRD_BT_MOD0_STATE(hal_uibrd_bt_state);
     }
-    else
+    else if(mod == HAL_BT_MOD_1)
     {
         state = HAL_UIBRD_BT_MOD1_STATE(hal_uibrd_bt_state);
+    }
+    else
+    {
+        return HAL_BT_STATE_UNKNOWN;
     }
 
     HAL_ASSERT(state < sizeof(mapping));
@@ -107,7 +111,7 @@ extern uint8_t hal_bt_get_state ( uint8_t mod )
 }
 
 /***************************************************************************************************
- * @fn      hal_bt_set
+ * @fn      hal_bt_ctrl_pin
  *
  * @brief   
  *
@@ -119,14 +123,13 @@ extern uint8_t hal_bt_get_state ( uint8_t mod )
  *
  * @return  
  ***************************************************************************************************/
-extern void hal_bt_ctrl ( uint8_t mod, uint8_t ctrl )
+extern void    hal_bt_ctrl_pin ( uint8_t mods, uint8_t pins, uint8_t value )
 {
-    uint8_t pb[2];
-
-    HAL_ASSERT(mod <= HAL_BT_MOD_1);
+    uint8_t pb[3];
     
-    pb[0] = 1<<mod;
-    pb[1] = ctrl;
+    pb[0] = mods;
+    pb[1] = pins;
+    pb[2] = value;
     
     hal_uibrd_write( HAL_UIBRD_REG_BT_CTRL, pb, sizeof(pb) );
 }

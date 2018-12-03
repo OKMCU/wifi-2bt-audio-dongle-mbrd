@@ -48,8 +48,8 @@ static uint8_t bt_state[2];
 
 extern void app_task_uibrd_init ( void )
 {
-     bt_state[HAL_BT_MOD_0] = HAL_BT_STATE_UNKNOWN;
-     bt_state[HAL_BT_MOD_1] = HAL_BT_STATE_UNKNOWN;
+     bt_state[0] = HAL_BT_STATE_UNKNOWN;
+     bt_state[1] = HAL_BT_STATE_UNKNOWN;
 }
 
 
@@ -82,9 +82,9 @@ extern void app_task_uibrd( uint8_t task_id, uint8_t event_id )
         case TASK_EVT_APP_UIBRD_UPD_BT:
         {
             state = hal_bt_get_state(HAL_BT_MOD_0);
-            if(state != bt_state[HAL_BT_MOD_0])
+            if(state != bt_state[0])
             {
-                bt_state[HAL_BT_MOD_0] = state;
+                bt_state[0] = state;
                 p_msg = (uint8_t *)osal_msg_create(sizeof(uint8_t));
                 APP_ASSERT(p_msg != NULL);
                 *p_msg = state;
@@ -93,9 +93,9 @@ extern void app_task_uibrd( uint8_t task_id, uint8_t event_id )
             }
 
             state = hal_bt_get_state(HAL_BT_MOD_1);
-            if(state != bt_state[HAL_BT_MOD_1])
+            if(state != bt_state[1])
             {
-                bt_state[HAL_BT_MOD_1] = state;
+                bt_state[1] = state;
                 p_msg = (uint8_t *)osal_msg_create(sizeof(uint8_t));
                 APP_ASSERT(p_msg != NULL);
                 *p_msg = state;

@@ -162,8 +162,7 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
             if( app_info.bt_mode == BT_MODE_OFF )
             {
                 app_info.bt_mode = BT_MODE_SINGLE;
-                hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
-                hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
+                BT_POWER_ON( HAL_BT_MOD_0 );
                 LED_BT_IND_MODE_SINGLE();
                 LED_BT0_IND_STATE_DISCOVERABLE();
                 LED_BT1_IND_STATE_OFF();
@@ -179,8 +178,7 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
             else
             {
                 app_info.bt_mode = BT_MODE_OFF;
-                hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_OFF );
-                hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
+                BT_POWER_OFF( HAL_BT_MOD_0 + HAL_BT_MOD_1 );
                 LED_BT_IND_MODE_OFF();
                 LED_BT0_IND_STATE_OFF();
                 LED_BT1_IND_STATE_OFF();
@@ -202,8 +200,7 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 app_info.bt_mode++;
                 if( app_info.bt_mode == BT_MODE_PARTY )
                 {
-                    hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
-                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_PAIRING );
+                    BT_POWER_ON( HAL_BT_MOD_0 + HAL_BT_MOD_1 );
                     LED_BT_IND_MODE_PARTY();
                     LED_BT0_IND_STATE_DISCOVERABLE();
                     LED_BT1_IND_STATE_DISCOVERABLE();
@@ -214,8 +211,7 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 }
                 else if( app_info.bt_mode == BT_MODE_MIXER )
                 {
-                    hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
-                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_PAIRING );
+                    BT_POWER_ON( HAL_BT_MOD_0 + HAL_BT_MOD_1 );
                     LED_BT_IND_MODE_MIXER();
                     LED_BT0_IND_STATE_DISCOVERABLE();
                     LED_BT1_IND_STATE_DISCOVERABLE();
@@ -226,8 +222,7 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 else
                 {
                     app_info.bt_mode = BT_MODE_SINGLE;
-                    hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
-                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
+                    BT_POWER_OFF( HAL_BT_MOD_1 );
                     LED_BT_IND_MODE_SINGLE();
                     LED_BT0_IND_STATE_DISCOVERABLE();
                     LED_BT1_IND_STATE_OFF();

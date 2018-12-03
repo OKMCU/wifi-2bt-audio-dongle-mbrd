@@ -60,6 +60,13 @@
                                          hal_dsp_set_src(HAL_DSP_SRC_SDI0); \
                                          hal_dsp_set_src(HAL_DSP_SRC_SDI1); )
 
+#define BT_DISABLE(x)                    hal_bt_ctrl_pin(x, HAL_BT_CTL_PIN_ALL, 0)
+#define BT_ENABLE(x)                     hal_bt_ctrl_pin(x, HAL_BT_CTL_PIN_RST, 1)
+#define BT_POWER_ON(x)                   hal_bt_ctrl_pin(x, HAL_BT_CTL_PIN_MFB, 1)
+#define BT_POWER_OFF(x)                  hal_bt_ctrl_pin(x, HAL_BT_CTL_PIN_MFB, 0)
+#define BT_PAIRING_START(x)              hal_bt_ctrl_pin(x, HAL_BT_CTL_PIN_PAIR, 1)
+#define BT_PAIRING_STOP(x)               hal_bt_ctrl_pin(x, HAL_BT_CTL_PIN_PAIR, 0)
+
 #define APP_ASSERT_EN           1
 
 /**************************************************************************************************

@@ -42,7 +42,7 @@ extern "C"
 #define HAL_UIBRD_REG_IRQ_EVENT     0x02 //READ ONLY,  len = 1, check the interrupt request events by this REG
 #define HAL_UIBRD_REG_KEY_VALUE     0x03 //READ ONLY,  len = 1, check the key press/release status by this REG
 #define HAL_UIBRD_REG_BT_STATE      0x04 //READ ONLY,  len = 1, check the bluetooth module working status by this REG
-#define HAL_UIBRD_REG_BT_CTRL       0x05 //WRITE ONLY, len = 2, set the bluetooth working state
+#define HAL_UIBRD_REG_BT_CTRL       0x05 //WRITE ONLY, len = 3, set the bluetooth working state
 #define HAL_UIBRD_REG_LED_CTRL      0x06 //WRITE ONLY, len = 5, set the LED ON/OFF/BLINKING state
 
 /*********************************************************************
