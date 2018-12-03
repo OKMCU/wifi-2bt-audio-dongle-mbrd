@@ -21,6 +21,8 @@
 
 #include "bufmgr.h"
 
+#if (SPL_I2C_EN > 0)
+
 #if (SPL_I2C0_SLAVE_EN > 0)
 extern void     SPL_I2C0_CALLBACK_ADDRW( void );
 extern void     SPL_I2C0_CALLBACK_ADDRR( void );
@@ -78,6 +80,23 @@ extern void     spl_i2c_open( uint8_t port )
         I2C0->I2CLK = u32Div;
 #endif /* (SPL_I2C0_MASTER_EN > 0) */
         I2C0->I2CON |= I2C_I2CON_ENS1_Msk;
+#if (SPL_I2C0_SLAVE_EN > 0)
+        I2C_SET_CONTROL_REG( I2C0, I2C_I2CON_SI_AA );
+
+        I2C_SetSlaveAddr(I2C0, 0, SPL_I2C0_SLAVE_ADDR0, 0);   /* Slave Address 0 */
+        I2C_SetSlaveAddr(I2C0, 1, SPL_I2C0_SLAVE_ADDR1, 0);   /* Slave Address 1 */
+        I2C_SetSlaveAddr(I2C0, 2, SPL_I2C0_SLAVE_ADDR2, 0);   /* Slave Address 2 */
+        I2C_SetSlaveAddr(I2C0, 3, SPL_I2C0_SLAVE_ADDR3, 0);   /* Slave Address 3 */
+
+        /* Set I2C 4 Slave Addresses Mask */
+        I2C_SetSlaveAddrMask(I2C0, 0, 0x00);
+        I2C_SetSlaveAddrMask(I2C0, 1, 0x00);
+        I2C_SetSlaveAddrMask(I2C0, 2, 0x00);
+        I2C_SetSlaveAddrMask(I2C0, 3, 0x00);
+
+        I2C_EnableInt(I2C0);
+        NVIC_EnableIRQ(I2C0_IRQn);
+#endif /* (SPL_I2C0_SLAVE_EN > 0) */
     }
 #endif /* (SPL_I2C0_MASTER_EN > 0 || SPL_I2C0_SLAVE_EN > 0) */
 
@@ -89,6 +108,23 @@ extern void     spl_i2c_open( uint8_t port )
         I2C1->I2CLK = u32Div;
 #endif /* (SPL_I2C1_MASTER_EN > 0) */
         I2C1->I2CON |= I2C_I2CON_ENS1_Msk;
+#if (SPL_I2C1_SLAVE_EN > 0)
+        I2C_SET_CONTROL_REG( I2C1, I2C_I2CON_SI_AA );
+
+        I2C_SetSlaveAddr(I2C1, 0, SPL_I2C1_SLAVE_ADDR0, 0);   /* Slave Address 0 */
+        I2C_SetSlaveAddr(I2C1, 1, SPL_I2C1_SLAVE_ADDR1, 0);   /* Slave Address 1 */
+        I2C_SetSlaveAddr(I2C1, 2, SPL_I2C1_SLAVE_ADDR2, 0);   /* Slave Address 2 */
+        I2C_SetSlaveAddr(I2C1, 3, SPL_I2C1_SLAVE_ADDR3, 0);   /* Slave Address 3 */
+
+        /* Set I2C 4 Slave Addresses Mask */
+        I2C_SetSlaveAddrMask(I2C1, 0, 0x00);
+        I2C_SetSlaveAddrMask(I2C1, 1, 0x00);
+        I2C_SetSlaveAddrMask(I2C1, 2, 0x00);
+        I2C_SetSlaveAddrMask(I2C1, 3, 0x00);
+        
+        I2C_EnableInt(I2C1);
+        NVIC_EnableIRQ(I2C1_IRQn);
+#endif /* (SPL_I2C1_SLAVE_EN > 0) */
     }
 #endif /* (SPL_I2C1_MASTER_EN > 0 || SPL_I2C1_SLAVE_EN > 0) */
 
@@ -117,6 +153,7 @@ extern uint8_t  spl_i2c_busy( uint8_t port )
     return 1;
 }
 
+#if (SPL_I2C0_MASTER_EN > 0 || SPL_I2C1_MASTER_EN > 0)
 extern uint8_t  spl_i2c_start( uint8_t port )
 {
     uint32_t status;
@@ -145,7 +182,9 @@ extern uint8_t  spl_i2c_start( uint8_t port )
 
     return SPL_I2C_ERR_BE;
 }
+#endif
 
+#if (SPL_I2C0_MASTER_EN > 0 || SPL_I2C1_MASTER_EN > 0)
 extern uint8_t  spl_i2c_restart( uint8_t port )
 {
     uint32_t status;
@@ -174,7 +213,9 @@ extern uint8_t  spl_i2c_restart( uint8_t port )
 
     return SPL_I2C_ERR_BE; 
 }
+#endif
 
+#if (SPL_I2C0_MASTER_EN > 0 || SPL_I2C1_MASTER_EN > 0)
 extern uint8_t  spl_i2c_wr_addr( uint8_t port, uint8_t addr )
 {
     uint32_t status;
@@ -226,7 +267,9 @@ extern uint8_t  spl_i2c_wr_addr( uint8_t port, uint8_t addr )
 
     return SPL_I2C_ERR_BE;
 }
+#endif
 
+#if (SPL_I2C0_MASTER_EN > 0 || SPL_I2C1_MASTER_EN > 0)
 extern uint8_t  spl_i2c_wr_data( uint8_t port, uint8_t byte )
 {
     uint32_t status;
@@ -264,7 +307,9 @@ extern uint8_t  spl_i2c_wr_data( uint8_t port, uint8_t byte )
     return SPL_I2C_ERR_BE;
     
 }
+#endif
 
+#if (SPL_I2C0_MASTER_EN > 0 || SPL_I2C1_MASTER_EN > 0)
 extern uint8_t  spl_i2c_rd_data( uint8_t port, uint8_t ack, uint8_t *p_data )
 {
     uint32_t status;
@@ -316,7 +361,9 @@ extern uint8_t  spl_i2c_rd_data( uint8_t port, uint8_t ack, uint8_t *p_data )
 
     return SPL_I2C_ERR_BE;
 }
+#endif
 
+#if (SPL_I2C0_MASTER_EN > 0 || SPL_I2C1_MASTER_EN > 0)
 extern uint8_t  spl_i2c_stop( uint8_t port )
 {
     uint32_t status;
@@ -358,85 +405,7 @@ extern uint8_t  spl_i2c_stop( uint8_t port )
 
      return SPL_I2C_ERR_BE;
 }
-
-extern void     spl_i2c_slave_addr( uint8_t port, uint8_t addr )
-{
-#if (SPL_I2C0_SLAVE_EN > 0)
-    if(port == SPL_I2C_PORT_0)
-    {
-        I2C_SetSlaveAddr(I2C0, 0, addr, 0);   /* Slave Address 0 */
-        I2C_SetSlaveAddr(I2C0, 1, addr, 0);   /* Slave Address 1 */
-        I2C_SetSlaveAddr(I2C0, 2, addr, 0);   /* Slave Address 2 */
-        I2C_SetSlaveAddr(I2C0, 3, addr, 0);   /* Slave Address 3 */
-
-        /* Set I2C 4 Slave Addresses Mask */
-        I2C_SetSlaveAddrMask(I2C0, 0, 0x00);
-        I2C_SetSlaveAddrMask(I2C0, 1, 0x00);
-        I2C_SetSlaveAddrMask(I2C0, 2, 0x00);
-        I2C_SetSlaveAddrMask(I2C0, 3, 0x00);
-        return;
-    }
 #endif
-
-#if (SPL_I2C1_SLAVE_EN > 0)
-    if(port == SPL_I2C_PORT_1)
-    {
-        I2C_SetSlaveAddr(I2C1, 0, addr, 0);   /* Slave Address 0 */
-        I2C_SetSlaveAddr(I2C1, 1, addr, 0);   /* Slave Address 1 */
-        I2C_SetSlaveAddr(I2C1, 2, addr, 0);   /* Slave Address 2 */
-        I2C_SetSlaveAddr(I2C1, 3, addr, 0);   /* Slave Address 3 */
-
-        /* Set I2C 4 Slave Addresses Mask */
-        I2C_SetSlaveAddrMask(I2C1, 0, 0x00);
-        I2C_SetSlaveAddrMask(I2C1, 1, 0x00);
-        I2C_SetSlaveAddrMask(I2C1, 2, 0x00);
-        I2C_SetSlaveAddrMask(I2C1, 3, 0x00);
-        return;
-    }
-#endif
-
-}
-
-extern void     spl_i2c_slave_enable( uint8_t port )
-{
-#if (SPL_I2C0_SLAVE_EN > 0)
-    if(port == SPL_I2C_PORT_0)
-    {
-        I2C_EnableInt(I2C0);
-        NVIC_EnableIRQ(I2C0_IRQn);
-        return;
-    }
-#endif
-
-#if (SPL_I2C1_SLAVE_EN > 0)
-    if(port == SPL_I2C_PORT_1)
-    {
-        I2C_EnableInt(I2C1);
-        NVIC_EnableIRQ(I2C1_IRQn);
-    }
-#endif
-}
-
-extern void     spl_i2c_slave_disable( uint8_t port )
-{
-#if (SPL_I2C0_SLAVE_EN > 0)
-    if(port == SPL_I2C_PORT_0)
-    {
-        I2C_DisableInt(I2C0);
-        NVIC_DisableIRQ(I2C0_IRQn);
-        return;
-    }
-#endif
-
-#if (SPL_I2C1_SLAVE_EN > 0)
-    if(port == SPL_I2C_PORT_1)
-    {
-        I2C_DisableInt(I2C1);
-        NVIC_DisableIRQ(I2C1_IRQn);
-        return;
-    }
-#endif
-}
 
 extern void     spl_i2c_close( uint8_t port )
 {
@@ -444,6 +413,10 @@ extern void     spl_i2c_close( uint8_t port )
     if(port == SPL_I2C_PORT_0)
     {
         I2C_Close(I2C0);
+#if (SPL_I2C0_SLAVE_EN > 0)
+        I2C_DisableInt(I2C0);
+        NVIC_DisableIRQ(I2C0_IRQn);
+#endif
         return;
     }
 #endif
@@ -453,6 +426,10 @@ extern void     spl_i2c_close( uint8_t port )
     if(port == SPL_I2C_PORT_1)
     {
         I2C_Close(I2C1);
+#if (SPL_I2C1_SLAVE_EN > 0)
+        I2C_DisableInt(I2C1);
+        NVIC_DisableIRQ(I2C1_IRQn);
+#endif
         return;
     }
 #endif
@@ -604,5 +581,5 @@ extern void spl_i2c1_isr  ( void )
     }
 }
 #endif
-
+#endif /* (SPL_I2C_EN > 0) */
 

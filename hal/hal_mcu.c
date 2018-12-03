@@ -41,7 +41,7 @@ extern void hal_mcu_init( void )
     spl_uart_open( SPL_UART_PORT_1 );
 #endif
 
-#if (SPL_I2C0_MASTER_EN > 0)
+#if (SPL_I2C0_MASTER_EN > 0 || SPL_I2C0_SLAVE_EN > 0)
     spl_i2c_init( SPL_I2C_PORT_0 );
     spl_i2c_open( SPL_I2C_PORT_0 );
 #endif

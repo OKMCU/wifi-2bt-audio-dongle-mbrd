@@ -38,9 +38,6 @@ extern uint8_t  spl_i2c_wr_addr( uint8_t port, uint8_t addr );
 extern uint8_t  spl_i2c_wr_data( uint8_t port, uint8_t byte );
 extern uint8_t  spl_i2c_rd_data( uint8_t port, uint8_t ack, uint8_t *p_data );
 extern uint8_t  spl_i2c_stop( uint8_t port );
-extern void     spl_i2c_slave_addr( uint8_t port, uint8_t addr );
-extern void     spl_i2c_slave_enable( uint8_t port );
-extern void     spl_i2c_slave_disable( uint8_t port );
 extern void     spl_i2c_close( uint8_t port );
 extern void     spl_i2c_deinit( uint8_t port );
 

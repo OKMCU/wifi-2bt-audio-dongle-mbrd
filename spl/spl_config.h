@@ -57,6 +57,10 @@
 #define SPL_I2C1_CLOCK                      100000
 #endif
 #if (SPL_I2C0_SLAVE_EN > 0)
+#define SPL_I2C0_SLAVE_ADDR0                0x4A
+#define SPL_I2C0_SLAVE_ADDR1                0x4A
+#define SPL_I2C0_SLAVE_ADDR2                0x4A
+#define SPL_I2C0_SLAVE_ADDR3                0x4A
 #define SPL_I2C0_CALLBACK_ADDRW             spl_i2c0_callback_addrw
 #define SPL_I2C0_CALLBACK_ADDRR             spl_i2c0_callback_addrr
 #define SPL_I2C0_CALLBACK_RXD               spl_i2c0_callback_rxd
@@ -64,6 +68,10 @@
 #define SPL_I2C0_CALLBACK_FRMEND            spl_i2c0_callback_frmend
 #endif
 #if (SPL_I2C1_SLAVE_EN > 0)
+#define SPL_I2C1_SLAVE_ADDR0
+#define SPL_I2C1_SLAVE_ADDR1
+#define SPL_I2C1_SLAVE_ADDR2
+#define SPL_I2C1_SLAVE_ADDR3
 #define SPL_I2C1_CALLBACK_ADDRW             spl_i2c1_callback_addrw
 #define SPL_I2C1_CALLBACK_ADDRR             spl_i2c1_callback_addrr
 #define SPL_I2C1_CALLBACK_RXD               spl_i2c1_callback_rxd
