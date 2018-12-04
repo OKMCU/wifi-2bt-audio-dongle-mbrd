@@ -48,7 +48,6 @@
  *                                           GLOBAL VARIABLES
  ***************************************************************************************************/
 extern uint8_t hal_uibrd_bt_state;
-static uint8_t bt_state_current[2];
 
 /***************************************************************************************************
  *                                            LOCAL FUNCTION
@@ -71,8 +70,6 @@ static uint8_t bt_state_current[2];
  ***************************************************************************************************/
 extern void hal_bt_init (void)
 {
-    bt_state_current[0] = HAL_BT_STATE_OFF;
-    bt_state_current[1] = HAL_BT_STATE_OFF;
 }
 
 /***************************************************************************************************
@@ -86,15 +83,26 @@ extern void hal_bt_init (void)
  ***************************************************************************************************/
 extern uint8_t hal_bt_get_state ( uint8_t mod )
 {
+    const uint8_t mapping[] = {
+        HAL_BT_STATE_UNKNOWN,
+        HAL_BT_STATE_PAUSED,
+        HAL_BT_STATE_UNKNOWN,
+        HAL_BT_STATE_CONNECTABLE,
+        HAL_BT_STATE_UNKNOWN,
+        HAL_BT_STATE_DISCOVERABLE,
+        HAL_BT_STATE_PLAYING,
+        HAL_BT_STATE_OFF
+    };
+    
     uint8_t state = HAL_BT_STATE_UNKNOWN;
     
     if(mod == HAL_BT_MOD_0)
     {
-        state = bt_state_current[0];
+        state = mapping[HAL_UIBRD_BT_MOD0_STATE(hal_uibrd_bt_state)];
     }
     else if(mod == HAL_BT_MOD_1)
     {
-        state = bt_state_current[1];
+        state = mapping[HAL_UIBRD_BT_MOD1_STATE(hal_uibrd_bt_state)];
     }
     
     return state;
@@ -127,7 +135,11 @@ extern void    hal_bt_set_pin ( uint8_t mods, uint8_t pins, uint8_t value )
 extern void    hal_bt_ctrl      ( uint8_t mods, uint8_t ctrl )
 {
     uint8_t id;
+    uint8_t bt_state[2];
 
+    bt_state[0] = hal_bt_get_state(HAL_BT_MOD_0);
+    bt_state[1] = hal_bt_get_state(HAL_BT_MOD_1);
+    
     for( id = 0; id < 2; id++ )
     {
         if( mods & (1<<id) )
@@ -136,20 +148,25 @@ extern void    hal_bt_ctrl      ( uint8_t mods, uint8_t ctrl )
             {
                 case HAL_BT_CTRL_ON:
                 {
-                    if( bt_state_current[id] == HAL_BT_STATE_OFF )
-                    {
-                        hal_bt_set_pin( 1<<id, HAL_BT_PIN_MFB+HAL_BT_PIN_RST, 1 );
-                    }
+                    hal_bt_set_pin( 1<<id, HAL_BT_PIN_MFB+HAL_BT_PIN_RST, 1 );
                 }
                 break;
 
                 case HAL_BT_CTRL_PAIRING:
                 {
-                    if( bt_state_current[id] == HAL_BT_STATE_CONNECTABLE ||
-                        bt_state_current[id] == HAL_BT_STATE_PAUSED      ||
-                        bt_state_current[id] == HAL_BT_STATE_PLAYING )
+                    if( bt_state[id] == HAL_BT_STATE_CONNECTABLE ||
+                        bt_state[id] == HAL_BT_STATE_PAUSED      ||
+                        bt_state[id] == HAL_BT_STATE_PLAYING )
                     {
                         hal_bt_set_pin( 1<<id, HAL_BT_PIN_PAIR, 1 );
+                        if( id == 0 )
+                        {
+                            osal_timer_event_create( TASK_ID_APP_BT, TASK_EVT_APP_BT_TRIG_MOD0_PAIRING_STOP, 100 );
+                        }
+                        else
+                        {
+                            osal_timer_event_create( TASK_ID_APP_BT, TASK_EVT_APP_BT_TRIG_MOD1_PAIRING_STOP, 100 );
+                        }
                     }
                 }
                 break;
@@ -166,43 +183,6 @@ extern void    hal_bt_ctrl      ( uint8_t mods, uint8_t ctrl )
         }
     }
     
-}
-
-extern void    hal_bt_handle_uibrd_bt_state( uint8_t uibrd_bt_state )
-{
-    const uint8_t mapping[] = {
-        HAL_BT_STATE_UNKNOWN,
-        HAL_BT_STATE_PAUSED,
-        HAL_BT_STATE_UNKNOWN,
-        HAL_BT_STATE_CONNECTABLE,
-        HAL_BT_STATE_UNKNOWN,
-        HAL_BT_STATE_DISCOVERABLE,
-        HAL_BT_STATE_PLAYING,
-        HAL_BT_STATE_OFF
-    };
-    uint8_t id;
-    
-    bt_state_current[0] = uibrd_bt_state&0xF;
-    bt_state_current[1] = uibrd_bt_state>>4;
-    
-    HAL_ASSERT(bt_state_current[0] < sizeof(mapping));
-    HAL_ASSERT(bt_state_current[1] < sizeof(mapping));
-
-    bt_state_current[0] = mapping[bt_state_current[0]];
-    bt_state_current[1] = mapping[bt_state_current[1]];
-
-    //osal_event_set(TASK_ID_APP_UIBRD, TASK_EVT_APP_UIBRD_UPD_BT);
-
-    for( id = 0; id < 2; id++ )
-    {
-        if( bt_state_current[id] == HAL_BT_STATE_DISCOVERABLE )
-        {
-            hal_bt_set_pin( 1<<id, HAL_BT_PIN_PAIR, 0 );
-        }
-
-        osal_event_set(TASK_ID_APP_UIBRD, TASK_EVT_APP_UIBRD_UPD_BT);
-    }
-
 }
 
 /***************************************************************************************************
