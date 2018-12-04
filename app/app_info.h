@@ -27,6 +27,7 @@ typedef struct app_info_t {
     uint8_t vol;
     uint8_t src;
     uint8_t bt_mode;
+    uint8_t bt_state[2];
 } APP_INFO_t;
 /* ------------------------------------------------------------------------------------------------
  *                                           CONSTANTS

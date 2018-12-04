@@ -75,35 +75,11 @@ extern void app_task_bt_init ( void )
  **************************************************************************************************/
 void app_task_bt( uint8_t task_id, uint8_t event_id )
 {
-    uint8_t *p_msg;
-    uint8_t type;
-    uint8_t state;
-
     switch ( event_id )
     {
-        case OSAL_TASK_EVENT_MSG:
+        case TASK_EVT_APP_BT_UPDATE_STATE:
         {
-            p_msg = (uint8_t *)osal_msg_recv(task_id);
-            while(p_msg)
-            {
-                type = osal_msg_get_type(p_msg);
-                state = *p_msg;
-                if(type == TASK_MSG_APP_BT_BT0_STATE)
-                {
-                    app_event_bt_state_update(HAL_BT_MOD_0, state);
-                }
-                else if(type == TASK_MSG_APP_BT_BT1_STATE)
-                {
-                    app_event_bt_state_update(HAL_BT_MOD_1, state);
-                }
-                else
-                {
-                    APP_ASSERT_FORCED();
-                }
-
-                osal_msg_delete( p_msg );
-                p_msg = (uint8_t *)osal_msg_recv( task_id );
-            }
+            app_event_bt_state_update();
         }
         break;
 
@@ -116,6 +92,18 @@ void app_task_bt( uint8_t task_id, uint8_t event_id )
         case TASK_EVT_APP_BT_TRIG_MOD1_PAIRING_STOP:
         {
             hal_bt_set_pin( HAL_BT_MOD_1, HAL_BT_PIN_PAIR, 0 );
+        }
+        break;
+
+        case TASK_EVT_APP_BT_DISCONNECT_BT0:
+        {
+            hal_bt_ctrl( HAL_BT_MOD_0, HAL_BT_CTRL_PAIRING );
+        }
+        break;
+
+        case TASK_EVT_APP_BT_DISCONNECT_BT1:
+        {
+            hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_PAIRING );
         }
         break;
 

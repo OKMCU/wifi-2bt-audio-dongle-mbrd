@@ -50,8 +50,11 @@
 #define TASK_EVT_APP_UIBRD_UPD_KEY          1
 #define TASK_EVT_APP_UIBRD_UPD_BT           2
 
-#define TASK_EVT_APP_BT_TRIG_MOD0_PAIRING_STOP   1
-#define TASK_EVT_APP_BT_TRIG_MOD1_PAIRING_STOP   2
+#define TASK_EVT_APP_BT_UPDATE_STATE             1
+#define TASK_EVT_APP_BT_TRIG_MOD0_PAIRING_STOP   2
+#define TASK_EVT_APP_BT_TRIG_MOD1_PAIRING_STOP   3
+#define TASK_EVT_APP_BT_DISCONNECT_BT0           4
+#define TASK_EVT_APP_BT_DISCONNECT_BT1           5
 
 #define TASK_EVT_HAL_DRIVER_BASIC_LUCICMD_RXNE   2
 #define TASK_EVT_HAL_DRIVER_BASIC_CLI_RXNE       3
@@ -68,8 +71,8 @@
 
 
 
-#define TASK_MSG_APP_BT_BT0_STATE           0        
-#define TASK_MSG_APP_BT_BT1_STATE           1
+//#define TASK_MSG_APP_BT_BT0_STATE           0        
+//#define TASK_MSG_APP_BT_BT1_STATE           1
 
 /**************************************************************************************************
  *                                        FUNCTIONS - API

@@ -72,6 +72,8 @@ extern void app_event_main_por( void )
     app_info.wifi_state_curr = WIFI_STATE_OFF;
     app_info.wifi_state_prev = WIFI_STATE_OFF;
     app_info.bt_mode = BT_MODE_OFF;
+    app_info.bt_state[0] = HAL_BT_STATE_OFF;
+    app_info.bt_state[1] = HAL_BT_STATE_OFF;
     
     hal_dsp_enable();
     hal_wifimod_enable();

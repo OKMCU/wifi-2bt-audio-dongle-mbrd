@@ -21,6 +21,10 @@
 #define FIRMWARE_VER            "V1.1.0"
 #define HARDWARE_VER            "V2.0.0"
 
+#define BT_STATE_DEBOUNCE_TIME_MS   200
+#define BT_PARTY_MODE_TIMEOUT       30000
+#define BT_MIXER_MODE_TIMEOUT       30000
+
 //#define LED_WIFI_IND_BOOTING()  st( hal_led_set(HAL_LED_WIFIB, HAL_LED_MODE_OFF); \
 //                                    hal_led_blink(HAL_LED_WIFIR, 0, 50, 1000); )
 #define LED_WIFI_IND_MODE_HN_INIT()      hal_led_blink(HAL_LED_WIFIB+HAL_LED_WIFIR, 0, 50, 1000)

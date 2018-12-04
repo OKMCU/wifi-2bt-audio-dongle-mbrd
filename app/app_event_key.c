@@ -167,10 +167,10 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 LED_BT0_IND_STATE_DISCOVERABLE();
                 LED_BT1_IND_STATE_OFF();
 
-                hal_dsp_set_vol( 0 );
-                DSP_SET_CHANNEL_BT();
-                hal_wifimod_set_src( HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU );
-                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+                //hal_dsp_set_vol( 0 );
+                //DSP_SET_CHANNEL_BT();
+                //hal_wifimod_set_src( HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU );
+                //osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
                 
                 hal_cli_print_str( "Bluetooth mode = " );
                 hal_cli_print_str( "SINGLE.\r\n" );
@@ -183,9 +183,9 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 LED_BT0_IND_STATE_OFF();
                 LED_BT1_IND_STATE_OFF();
 
-                hal_dsp_set_vol( 0 );
-                DSP_SET_CHANNEL_NONE();
-                hal_wifimod_set_src( HAL_WIFIMOD_SRC_NONE );
+                //hal_dsp_set_vol( 0 );
+                //DSP_SET_CHANNEL_NONE();
+                //hal_wifimod_set_src( HAL_WIFIMOD_SRC_NONE );
                 
                 hal_cli_print_str( "Bluetooth mode = " );
                 hal_cli_print_str( "OFF.\r\n" );

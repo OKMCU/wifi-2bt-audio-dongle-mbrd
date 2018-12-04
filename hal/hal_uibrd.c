@@ -46,8 +46,6 @@
 #define HAL_UIBRD_IRQ_UPD_KEY       0x01
 #define HAL_UIBRD_IRQ_UPD_BT        0x02
 
-#define HAL_UIBRD_BT_STATE_DEBOUNCE 200
-
 /***************************************************************************************************
  * MACROS
  ***************************************************************************************************/
@@ -72,7 +70,7 @@ static void hal_uibrd_update ( void )
     if( irqs & HAL_UIBRD_IRQ_UPD_BT )   //bt update event
     {
         hal_uibrd_read( HAL_UIBRD_REG_BT_STATE, &hal_uibrd_bt_state, sizeof(uint8_t) );
-        osal_timer_event_create(TASK_ID_APP_UIBRD, TASK_EVT_APP_UIBRD_UPD_BT, HAL_UIBRD_BT_STATE_DEBOUNCE);
+        osal_event_set(TASK_ID_APP_UIBRD, TASK_EVT_APP_UIBRD_UPD_BT);
     }
 }
 

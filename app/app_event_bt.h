@@ -39,7 +39,7 @@ extern "C"
  * FUNCTIONS - API
  **************************************************************************************************/
 
-extern void     app_event_bt_state_update( uint8_t mod, uint8_t state );
+extern void     app_event_bt_state_update( void );
 
 #ifdef __cplusplus
 }
