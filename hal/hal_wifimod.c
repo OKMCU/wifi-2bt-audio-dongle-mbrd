@@ -324,7 +324,11 @@ extern void hal_wifimod_driver_handle_mode_ctrl( void )
         break;
 
         case BUILD_UINT8( HAL_WIFIMOD_MODE_HN, HAL_WIFIMOD_MODE_CFG ):
-            hal_lucicmd_send_SetWiFiModeSA();
+            //it is found that, for a totally new device, the home network is never configured, 
+            //it will automatically runs into Wi-Fi CFG mode.
+            //Once this case happens, give up going into HN mode.
+            osal_event_set( TASK_ID_APP_WIFIMOD, TASK_EVT_APP_WIFIMOD_UPD_MODE );
+            wifi_mod_info.mode_target = HAL_WIFIMOD_MODE_NONE;
         break;
 
         case BUILD_UINT8( HAL_WIFIMOD_MODE_CFG, HAL_WIFIMOD_MODE_NONE ):
