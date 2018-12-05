@@ -135,6 +135,34 @@ extern void app_event_main_set_dsp_vol( void )
         break;
     }
 }
+
+extern void app_event_main_inc_vol( void )
+{
+    if( app_info.vol < 100 )
+    {
+        app_info.vol += MASTER_VOL_CONT_TUNE_STEP;
+        if( app_info.vol > 100 )
+            app_info.vol = 100;
+        hal_wifimod_set_vol( app_info.vol );
+        osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+        osal_timer_event_create( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_INC_VOL, MASTER_VOL_CONT_TUNE_DELAY_MS );
+    }
+}
+
+extern void app_event_main_dec_vol( void )
+{
+    if( app_info.vol > 0 )
+    {
+        if( app_info.vol >= MASTER_VOL_CONT_TUNE_STEP )
+            app_info.vol -= MASTER_VOL_CONT_TUNE_STEP;
+        else
+            app_info.vol = 0;
+        hal_wifimod_set_vol( app_info.vol );
+        osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+        osal_timer_event_create( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_DEC_VOL, MASTER_VOL_CONT_TUNE_DELAY_MS );
+    }
+}
+
 /**************************************************************************************************
 **************************************************************************************************/
 

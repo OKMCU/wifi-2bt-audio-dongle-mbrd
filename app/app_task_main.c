@@ -75,6 +75,18 @@ extern void app_task_main ( uint8_t task_id, uint8_t event_id )
         }
         break;
 
+        case TASK_EVT_APP_MAIN_DEC_VOL:
+        {
+            app_event_main_dec_vol();
+        }
+        break;
+
+        case TASK_EVT_APP_MAIN_INC_VOL:
+        {
+            app_event_main_inc_vol();
+        }
+        break;
+
         case TASK_EVT_APP_MAIN_OSAL_EXCEPTION:
         {
             hal_cli_print_str( "ERROR!\r\n" );

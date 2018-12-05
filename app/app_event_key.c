@@ -167,10 +167,11 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 LED_BT0_IND_STATE_DISCOVERABLE();
                 LED_BT1_IND_STATE_OFF();
 
-                //hal_dsp_set_vol( 0 );
-                //DSP_SET_CHANNEL_BT();
-                //hal_wifimod_set_src( HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU );
-                //osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+                app_info.src = AUDIO_SOURCE_BT;
+                hal_dsp_set_vol( 0 );
+                DSP_SET_CHANNEL_BT();
+                hal_wifimod_set_src( HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU );
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
                 
                 hal_cli_print_str( "Bluetooth mode = " );
                 hal_cli_print_str( "SINGLE.\r\n" );
@@ -183,9 +184,13 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
                 LED_BT0_IND_STATE_OFF();
                 LED_BT1_IND_STATE_OFF();
 
-                //hal_dsp_set_vol( 0 );
-                //DSP_SET_CHANNEL_NONE();
-                //hal_wifimod_set_src( HAL_WIFIMOD_SRC_NONE );
+                if( app_info.src == AUDIO_SOURCE_BT )
+                {
+                    app_info.src = AUDIO_SOURCE_NONE;
+                    hal_dsp_set_vol( 0 );
+                    DSP_SET_CHANNEL_NONE();
+                    hal_wifimod_set_src( HAL_WIFIMOD_SRC_NONE );
+                }
                 
                 hal_cli_print_str( "Bluetooth mode = " );
                 hal_cli_print_str( "OFF.\r\n" );
@@ -197,277 +202,115 @@ extern void app_event_key_update( uint8_t keyValue, uint8_t keyEvent )
         {
             if( app_info.bt_mode != BT_MODE_OFF )
             {
-                app_info.bt_mode++;
-                if( app_info.bt_mode == BT_MODE_PARTY )
+                if( app_info.src == AUDIO_SOURCE_BT )
                 {
-                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_ON );
-                    LED_BT_IND_MODE_PARTY();
-                    LED_BT0_IND_STATE_DISCOVERABLE();
-                    LED_BT1_IND_STATE_DISCOVERABLE();
-                    
-                    hal_cli_print_str( "Bluetooth mode = " );
-                    hal_cli_print_str( "PARTY.\r\n" );
-                    
-                }
-                else if( app_info.bt_mode == BT_MODE_MIXER )
-                {
-                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_PAIRING );
-                    LED_BT_IND_MODE_MIXER();
-                    LED_BT0_IND_STATE_DISCOVERABLE();
-                    LED_BT1_IND_STATE_DISCOVERABLE();
-                    
-                    hal_cli_print_str( "Bluetooth mode = " );
-                    hal_cli_print_str( "MIXER.\r\n" );
+                    app_info.bt_mode++;
+                    if( app_info.bt_mode == BT_MODE_PARTY )
+                    {
+                        hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_ON );
+                        LED_BT_IND_MODE_PARTY();
+                        LED_BT0_IND_STATE_DISCOVERABLE();
+                        LED_BT1_IND_STATE_DISCOVERABLE();
+                        
+                        hal_cli_print_str( "Bluetooth mode = " );
+                        hal_cli_print_str( "PARTY.\r\n" );
+                        
+                    }
+                    else if( app_info.bt_mode == BT_MODE_MIXER )
+                    {
+                        LED_BT_IND_MODE_MIXER();
+                        LED_BT0_IND_STATE_DISCOVERABLE();
+                        LED_BT1_IND_STATE_DISCOVERABLE();
+                        
+                        hal_cli_print_str( "Bluetooth mode = " );
+                        hal_cli_print_str( "MIXER.\r\n" );
+                    }
+                    else
+                    {
+                        app_info.bt_mode = BT_MODE_SINGLE;
+                        hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
+                        LED_BT_IND_MODE_SINGLE();
+                        LED_BT0_IND_STATE_DISCOVERABLE();
+                        LED_BT1_IND_STATE_OFF();
+                        
+                        hal_cli_print_str( "Bluetooth mode = " );
+                        hal_cli_print_str( "SINGLE.\r\n" );
+                    }
                 }
                 else
                 {
-                    app_info.bt_mode = BT_MODE_SINGLE;
-                    hal_bt_ctrl( HAL_BT_MOD_1, HAL_BT_CTRL_OFF );
-                    LED_BT_IND_MODE_SINGLE();
-                    LED_BT0_IND_STATE_DISCOVERABLE();
-                    LED_BT1_IND_STATE_OFF();
+                    if( app_info.src == AUDIO_SOURCE_AUXIN )
+                    {
+                        hal_led_set( HAL_LED_AUX, HAL_LED_MODE_OFF );
+                    }
                     
-                    hal_cli_print_str( "Bluetooth mode = " );
-                    hal_cli_print_str( "SINGLE.\r\n" );
+                    app_info.src = AUDIO_SOURCE_BT;
+                    hal_cli_print_str( "Set audio source as bluetooth.\r\n" );
+                    hal_dsp_set_vol( 0 );
+                    DSP_SET_CHANNEL_BT();
+                    hal_wifimod_set_src( HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU );
+                    osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
                 }
             }
+        }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_VOLDN, APP_EVENT_KEY_ENTER ):
+        {
+            if( app_info.vol > 0 )
+            {
+                if( app_info.vol >= MASTER_VOL_SINGLE_TUNE_STEP )
+                    app_info.vol -= MASTER_VOL_SINGLE_TUNE_STEP;
+                else
+                    app_info.vol = 0;
+                
+                hal_wifimod_set_vol( app_info.vol );
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+            }
+        }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_VOLUP, APP_EVENT_KEY_ENTER ):
+        {
+            if( app_info.vol < 100 )
+            {
+                app_info.vol += MASTER_VOL_SINGLE_TUNE_STEP;
+                if( app_info.vol > 100 )
+                    app_info.vol = 100;
+                
+                hal_wifimod_set_vol( app_info.vol );
+                osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
+            }
+        }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_VOLUP, APP_EVENT_KEY_LONG ):
+        {
+            osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_INC_VOL );
+        }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_VOLDN, APP_EVENT_KEY_LONG ):
+        {
+            osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_DEC_VOL );
+        }
+        break;
+        
+        case BUILD_UINT16( HAL_KEY_VOLUP, APP_EVENT_KEY_LEAVE ):
+        {
+            osal_timer_event_delete( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_INC_VOL );
+        }
+        break;
+
+        case BUILD_UINT16( HAL_KEY_VOLDN, APP_EVENT_KEY_LEAVE ):
+        {
+            osal_timer_event_delete( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_DEC_VOL );
         }
         break;
 
         default:
         break;
     }
-#if 0
-    
-
-    switch( keyValue )
-    {
-        case HAL_KEY_AUX:
-        {
-            if( keyEvent == APP_EVENT_KEY_SHORT )
-            {
-                if( AppInfo.dspAudioSrc != HAL_DSP_AUDIO_SRC_ADC )
-                {
-                    HalLuciCmdSendAuxInStart();
-                    
-                }
-                else
-                {
-                    HalLuciCmdSendAuxInStop();
-                }
-            }
-        }
-        break;
-
-        case HAL_KEY_WIFI:
-        {
-            if( keyEvent == APP_EVENT_KEY_SHORT )
-            {
-                if( AppInfo.lsWiFiMode == HAL_LUCICMD_WIFIMODE_SA )
-                {
-                    HalLuciCmdSendSetWiFiModeHN();
-                }
-                else if( AppInfo.lsWiFiMode == HAL_LUCICMD_WIFIMODE_HN )
-                {
-                    HalLuciCmdSendSetWiFiModeSA();
-                }
-                else if( AppInfo.lsWiFiMode == HAL_LUCICMD_WIFIMODE_CFG )
-                {
-                    HalLuciCmdSendSetWiFiModeSA();
-                }
-                else
-                {
-                    //HAL_LED_WIFI_INDICATE_MODE_NONE();
-                    //AppInfo.lsWiFiMode = HAL_LUCICMD_WIFIMODE_NONE;
-                    //HalLuciCmdSendSetWiFiModeSA();
-                }
-            }
-            else if( keyEvent == APP_EVENT_KEY_LONG )
-            {
-                if( AppInfo.lsWiFiMode == HAL_LUCICMD_WIFIMODE_HN )
-                {
-                    HalLuciCmdSendSetWiFiModeCFG();
-                }
-                else if( AppInfo.lsWiFiMode == HAL_LUCICMD_WIFIMODE_SA )
-                {
-                    HalLuciCmdSendSetWiFiModeCFG();
-                }
-                else if( AppInfo.lsWiFiMode == HAL_LUCICMD_WIFIMODE_CFG )
-                {
-                    HalLuciCmdSendSetWiFiModeSA();
-                }
-                else
-                {
-                    //HAL_LED_WIFI_INDICATE_MODE_NONE();
-                    //AppInfo.lsWiFiMode = HAL_LUCICMD_WIFIMODE_NONE;
-                    //HalLuciCmdSendSetWiFiModeHN();
-                }
-            }
-        }
-        break;
-
-        case HAL_KEY_BT:
-        {
-            if( keyEvent == APP_EVENT_KEY_SHORT )
-            {
-                if( AppInfo.btMode != APP_BT_MODE_OFF )
-                {
-                    AppInfo.btMode++;
-                    if( AppInfo.btMode == APP_BT_MODE_PARTY )
-                    {
-                        HalBtCtrl( HAL_BT_DEVICE_0 + HAL_BT_DEVICE_1, HAL_BT_CTRL_PAIRING );
-                        HAL_LED_BTMODE_IND_PARTY();
-                        HAL_LED_BT0_IND_DISCOVERABLE();
-                        HAL_LED_BT1_IND_DISCOVERABLE();
-                        
-                        HalTerminalPrintStr( "Bluetooth mode = " );
-                        HalTerminalPrintStr( "PARTY.\r\n" );
-                        
-                    }
-                    else if( AppInfo.btMode == APP_BT_MODE_DJ )
-                    {
-                        HalBtCtrl( HAL_BT_DEVICE_0 + HAL_BT_DEVICE_1, HAL_BT_CTRL_PAIRING );
-                        HAL_LED_BTMODE_IND_DJ();
-                        HAL_LED_BT0_IND_DISCOVERABLE();
-                        HAL_LED_BT1_IND_DISCOVERABLE();
-                        
-                        HalTerminalPrintStr( "Bluetooth mode = " );
-                        HalTerminalPrintStr( "DJ.\r\n" );
-                    }
-                    else
-                    {
-                        AppInfo.btMode = APP_BT_MODE_SINGLE;
-                        HalBtCtrl( HAL_BT_DEVICE_0, HAL_BT_CTRL_PAIRING );
-                        HalBtCtrl( HAL_BT_DEVICE_1, HAL_BT_CTRL_OFF );
-                        HAL_LED_BTMODE_IND_SINGLE();
-                        HAL_LED_BT0_IND_DISCOVERABLE();
-                        HAL_LED_BT1_IND_OFF();
-                        
-                        HalTerminalPrintStr( "Bluetooth mode = " );
-                        HalTerminalPrintStr( "SINGLE.\r\n" );
-                    }
-                    
-                    
-                }     
-            }
-            else if( keyEvent == APP_EVENT_KEY_LONG )
-            {
-                if( AppInfo.btMode == APP_BT_MODE_OFF )
-                {
-                    AppInfo.btMode = APP_BT_MODE_SINGLE;
-                    HalBtCtrl( HAL_BT_DEVICE_0, HAL_BT_CTRL_PAIRING );
-                    HalBtCtrl( HAL_BT_DEVICE_1, HAL_BT_CTRL_OFF );
-                    HAL_LED_BTMODE_IND_SINGLE();
-                    HAL_LED_BT0_IND_DISCOVERABLE();
-                    HAL_LED_BT1_IND_OFF();
-                    
-                    HalTerminalPrintStr( "Bluetooth mode = " );
-                    HalTerminalPrintStr( "SINGLE.\r\n" );
-                }
-                else
-                {
-                    AppInfo.btMode = APP_BT_MODE_OFF;
-                    HalBtCtrl( HAL_BT_DEVICE_0 + HAL_BT_DEVICE_1, HAL_BT_CTRL_OFF );
-                    HAL_LED_BTMODE_IND_OFF();
-                    HAL_LED_BT0_IND_OFF();
-                    HAL_LED_BT1_IND_OFF();
-                    
-                    HalTerminalPrintStr( "Bluetooth mode = " );
-                    HalTerminalPrintStr( "OFF.\r\n" );
-                }
-            }
-
-            if( keyEvent == APP_EVENT_KEY_SHORT || keyEvent == APP_EVENT_KEY_LONG )
-            {
-                if( AppInfo.dspAudioSrc != HAL_DSP_AUDIO_SRC_NONE )
-                {
-                    HAL_DSP_SET_AUDIOSRC_NONE();
-
-                    //Stop AUX-IN
-                    if( AppInfo.dspAudioSrc == HAL_DSP_AUDIO_SRC_ADC )
-                        HalLuciCmdSendAuxInStop();
-
-                    //Stop Wi-Fi
-                    AppInfo.dspAudioSrc = HAL_DSP_AUDIO_SRC_NONE;
-                }
-            }
-        }
-        break;
-
-        case HAL_KEY_VOLDN:
-            if( keyEvent == APP_EVENT_KEY_SHORT )
-            {
-                if( AppInfo.lsAudioSrc == HAL_LUCICMD_AUDIOSRC_LineIn )
-                {
-                    if( AppInfo.volAuxIn > 100 )
-                        AppInfo.volAuxIn = AppInfo.volAuxInNv;
-                    if( AppInfo.volAuxIn > 0 )
-                        AppInfo.volAuxIn--;
-                    
-                    if( AppInfo.volAuxIn == 100 )
-                        AppInfo.dspVol = HAL_DSP_VOL_MAX;
-                    else
-                        AppInfo.dspVol = (HAL_DSP_VOL_MAX * AppInfo.volAuxIn)/100;
-                    HalDspSetVol( AppInfo.dspVol );
-                    
-                    AppInfo.volDisp = AppInfo.volAuxIn;
-                    HalLuciCmdSendSetVolume( AppInfo.volDisp );
-                }
-                else
-                {
-                    if( AppInfo.lsVolDevice > 100 )
-                        AppInfo.lsVolDevice = AppInfo.lsVolDeviceNv;
-                    if( AppInfo.lsVolDevice > 0 )
-                        AppInfo.lsVolDevice--;
-
-                    AppInfo.volDisp = AppInfo.lsVolDevice;
-                    HalLuciCmdSendSetVolume( AppInfo.volDisp );
-                }
-
-                HalTerminalPrintStr( "Update display volume = " );
-                HalTerminalPrintUint( AppInfo.volDisp );
-                HalTerminalPrintStr( ".\r\n" );
-            }
-        break;
-
-        case HAL_KEY_VOLUP:
-            if( keyEvent == APP_EVENT_KEY_SHORT )
-            {
-                if( AppInfo.lsAudioSrc == HAL_LUCICMD_AUDIOSRC_LineIn )
-                {
-                    if( AppInfo.volAuxIn > 100 )
-                        AppInfo.volAuxIn = AppInfo.volAuxInNv;
-                    if( AppInfo.volAuxIn < 100 )
-                        AppInfo.volAuxIn++;
-                    
-                    if( AppInfo.volAuxIn == 100 )
-                        AppInfo.dspVol = HAL_DSP_VOL_MAX;
-                    else
-                        AppInfo.dspVol = (HAL_DSP_VOL_MAX * AppInfo.volAuxIn)/100;
-                    HalDspSetVol( AppInfo.dspVol );
-                    
-                    AppInfo.volDisp = AppInfo.volAuxIn;
-                    HalLuciCmdSendSetVolume( AppInfo.volDisp );
-                }
-                else
-                {
-                    if( AppInfo.lsVolDevice > 100 )
-                        AppInfo.lsVolDevice = AppInfo.lsVolDeviceNv;
-                    if( AppInfo.lsVolDevice < 100 )
-                        AppInfo.lsVolDevice++;
-                    
-
-                    AppInfo.volDisp = AppInfo.lsVolDevice;
-                    HalLuciCmdSendSetVolume( AppInfo.volDisp );
-                }
-                HalTerminalPrintStr( "Update display volume = " );
-                HalTerminalPrintUint( AppInfo.volDisp );
-                HalTerminalPrintStr( ".\r\n" );
-            }
-        break;
-        
-    }
-#endif
 }
 
 

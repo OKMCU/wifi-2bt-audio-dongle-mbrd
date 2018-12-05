@@ -136,22 +136,6 @@ extern void app_event_bt_state_update( void )
     
     }
 
-    if( bt_state[0] == HAL_BT_STATE_PLAYING || bt_state[1] == HAL_BT_STATE_PLAYING )
-    {
-        app_info.src = AUDIO_SOURCE_BT;
-        hal_dsp_set_vol( 0 );
-        DSP_SET_CHANNEL_BT();
-        hal_wifimod_set_src( HAL_WIFIMOD_SRC_EXT_SRC_CTL_BY_MCU );
-        osal_event_set( TASK_ID_APP_MAIN, TASK_EVT_APP_MAIN_SET_DSP_VOL );
-    }
-    else if( bt_state[0] == HAL_BT_STATE_OFF && bt_state[1] == HAL_BT_STATE_OFF )
-    {
-        app_info.src = AUDIO_SOURCE_NONE;
-        hal_dsp_set_vol( 0 );
-        DSP_SET_CHANNEL_NONE();
-        hal_wifimod_set_src( HAL_WIFIMOD_SRC_NONE );
-    }
-
     if( app_info.bt_mode == BT_MODE_PARTY )
     {
         if( bt_state[0] == HAL_BT_STATE_PAUSED && bt_state[1] == HAL_BT_STATE_PAUSED )

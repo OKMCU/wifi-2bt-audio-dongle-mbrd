@@ -141,8 +141,17 @@ extern void app_event_wifimod_update_source( uint8_t src )
 
     if( src != app_info.src )
     {
+        if( app_info.src == AUDIO_SOURCE_AUXIN )
+        {
+            hal_led_set( HAL_LED_AUX, HAL_LED_MODE_OFF );
+        }
+        else if( app_info.src == AUDIO_SOURCE_BT )
+        {
+            //hal_led_set( HAL_LED_BT, HAL_LED_MODE_OFF );
+        }
+        
         app_info.src = src;
-        switch ( app_info.src )
+        switch ( src )
         {
             case AUDIO_SOURCE_NONE:
             {
