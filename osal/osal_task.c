@@ -51,15 +51,20 @@ extern void osal_task_create ( OSAL_TASK_t pfn_task, uint8_t task_id )
 
 extern void osal_task_delete ( uint8_t task_id )
 {
+#if (OSAL_MSG_EN > 0)
     void *p_msg;
+#endif
+
     OSAL_ASSERT( task_id < OSAL_TASK_MAX );
 
+#if (OSAL_MSG_EN > 0)
     p_msg = osal_msg_recv( task_id );
     while( p_msg != NULL )
     {
         osal_msg_delete( p_msg );
         p_msg = osal_msg_recv( task_id );
     }
+#endif
     
     osal_task_list[task_id] = NULL;
     osal_event_list[task_id] = 0;

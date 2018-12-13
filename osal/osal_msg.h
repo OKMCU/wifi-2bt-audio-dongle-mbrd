@@ -18,6 +18,7 @@
 #define __OSAL_MSG_H__
 
 #include <stdint.h>
+#include "osal_config.h"
 
 #if ( OSAL_MSG_EN > 0 )
 extern void        osal_msg_init         ( void );
